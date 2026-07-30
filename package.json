@@ -1,0 +1,31 @@
+{
+  "name": "romeotkoduah",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Portfolio of Romeo Tweneboah Koduah — romeotkoduah.org",
+  "scripts": {
+    "dev": "next dev",
+    "prebuild": "node scripts/build-image-manifest.mjs",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "manifest": "node scripts/build-image-manifest.mjs"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "motion": "^12.23.12",
+    "next": "^15.5.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.13",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.1.1",
+    "@types/react-dom": "^19.1.1",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.7.0"
+  }
+}

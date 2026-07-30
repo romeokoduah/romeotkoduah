@@ -1,0 +1,285 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+/* ==========================================================================
+   Design tokens
+   Visual language derived from theacademicdesigner.com: warm off-white paper,
+   deep forest green + rust, condensed sans headings at line-height 1 over
+   humanist sans body at 1.5. Flat — no shadows, square-cornered buttons.
+   ========================================================================== */
+
+@theme {
+  /* --- colour ------------------------------------------------------------ */
+  --color-paper: #ffffff;
+  --color-soft: #f8f6f6; /* dominant section background */
+  --color-ink: #000000;
+  --color-ash: #dfdfdf;
+
+  /* practice accents */
+  --color-forest: #0b472c; /* masthead, Research & Hydrology */
+  --color-rust: #a4400a; /* primary buttons, Policy & Consulting */
+  --color-indigo: #4458be; /* AI & Digital Systems */
+  --color-ember: #c14300; /* link hover, Communications */
+  --color-emerald: #158753; /* Training & Speaking */
+  --color-periwinkle: #b2bbe6;
+
+  /* translucent cards laid over photography */
+  --color-veil: #ffffffd9;
+  --color-veil-warm: #f7f5f58f;
+
+  /* --- type -------------------------------------------------------------- */
+  --font-head: var(--font-oswald), 'Oswald', ui-sans-serif, sans-serif;
+  --font-body: var(--font-open-sans), 'Open Sans', ui-sans-serif, sans-serif;
+
+  /* Fluid scale, matched to the reference site's clamps.
+     Headings hold line-height 1; body holds 1.5. That contrast is the
+     single loudest signal in this design — do not soften it. */
+  --text-fluid-sm: clamp(14px, 0.875rem + ((1vw - 3.2px) * 0.455), 18px);
+  --text-fluid-md: clamp(15.747px, 0.984rem + ((1vw - 3.2px) * 0.938), 24px);
+  --text-fluid-lg: clamp(24.034px, 1.502rem + ((1vw - 3.2px) * 1.814), 40px);
+  --text-fluid-xl: clamp(33.419px, 2.089rem + ((1vw - 3.2px) * 3.021), 60px);
+  --text-fluid-2xl: clamp(40px, 2.5rem + ((1vw - 3.2px) * 3.864), 74px);
+
+  --text-h1: clamp(37.821px, 2.364rem + ((1vw - 3.2px) * 3.657), 70px);
+  --text-h2: clamp(31.609px, 1.976rem + ((1vw - 3.2px) * 2.772), 56px);
+  --text-h3: clamp(21.027px, 1.314rem + ((1vw - 3.2px) * 1.474), 34px);
+  --text-h4: clamp(18px, 1.125rem + ((1vw - 3.2px) * 0.455), 22px);
+  --text-brand: clamp(20px, 1.654rem + ((1vw - 3.2px) * 2.106), 34px);
+
+  /* --- layout ------------------------------------------------------------ */
+  --container-measure: 740px; /* text measure */
+  --container-wide: 1200px; /* section inner width */
+
+  /* --- spacing ----------------------------------------------------------- */
+  --spacing-s20: min(25px, 5vw);
+  --spacing-s30: min(50px, 5vw);
+  --spacing-s40: min(75px, 7.5vw);
+  --spacing-s50: min(100px, 10vw);
+  --spacing-s60: min(125px, 12.5vw);
+  --spacing-s70: min(150px, 15vw);
+  --spacing-s80: min(175px, 17.5vw);
+
+  /* --- motion ------------------------------------------------------------ */
+  --ease-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* MagicUI Marquee — injected by the shadcn registry */
+@theme inline {
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* the sticky bar is 64px; keep anchored headings clear of it */
+    scroll-padding-top: 80px;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-fluid-sm);
+    font-weight: 400;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-head);
+    font-weight: 500;
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: var(--text-h1);
+    line-height: 1;
+  }
+  h2 {
+    font-size: var(--text-h2);
+    line-height: 1;
+  }
+  h3 {
+    font-size: var(--text-h3);
+    line-height: 1.2;
+  }
+  h4 {
+    font-size: var(--text-h4);
+    line-height: 1.3;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ::selection {
+    background-color: var(--color-forest);
+    color: var(--color-soft);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-rust);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Scroll reveals ship with inline `opacity: 0` and are revealed by JS.
+     Without a fallback the whole page would be blank for anyone whose script
+     never runs. Content first — the animation is the enhancement. */
+  @media (scripting: none) {
+    .reveal {
+      opacity: 1 !important;
+      filter: none !important;
+      transform: none !important;
+    }
+  }
+}
+
+/* ==========================================================================
+   Components
+   Square corners, 2px outlines, flat fills — per the reference system.
+   Filled and outline variants share a bounding box (16/24 vs 15/23 + 2px).
+   ========================================================================== */
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 0;
+    border-radius: 0;
+    padding: 16px 24px;
+    font-family: var(--font-body);
+    font-size: var(--text-fluid-sm);
+    font-weight: 700;
+    line-height: 1;
+    color: #ffffff;
+    background-color: var(--color-rust);
+    cursor: pointer;
+    transition-property: border-color, background-color, color, opacity, filter;
+    transition-duration: 0.15s;
+    transition-timing-function: var(--ease-quad);
+  }
+
+  .btn:hover {
+    background-color: color-mix(in srgb, var(--color-rust) 85%, #000);
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    border: 2px solid currentColor;
+    padding: 15px 23px;
+    color: var(--color-forest);
+  }
+
+  .btn-outline:hover {
+    background-color: currentColor;
+  }
+
+  /* the text inside an outline button inverts on hover */
+  .btn-outline:hover > span {
+    color: var(--color-soft);
+  }
+
+  /* Section shells */
+  .section {
+    padding-block: var(--spacing-s60);
+  }
+
+  .section-tall {
+    padding-block: var(--spacing-s70);
+  }
+
+  .wide {
+    width: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--spacing-s30);
+  }
+
+  .measure {
+    max-width: var(--container-measure);
+  }
+
+  /* Translucent card laid over photography */
+  .veil {
+    background-color: var(--color-veil);
+    border-radius: 4px;
+    backdrop-filter: blur(6px);
+  }
+
+  .veil-warm {
+    background-color: var(--color-veil-warm);
+    border-radius: 4px;
+    backdrop-filter: blur(6px);
+  }
+
+  /* Editorial hairline used between list rows */
+  .rule {
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* fade the edges of a marquee */
+  .mask-edges {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 12%,
+      black 88%,
+      transparent
+    );
+  }
+}
