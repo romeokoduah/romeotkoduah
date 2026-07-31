@@ -1,4 +1,5 @@
 import manifest from '@/content/image-manifest.json'
+import { LOGO_KEYS_BY_SLUG } from '@/content/logos'
 
 export interface ProjectImages {
   cover: string | null
@@ -14,6 +15,7 @@ export interface SiteImages {
 interface Manifest {
   site: SiteImages
   projects: Record<string, ProjectImages>
+  logos: Record<string, string>
 }
 
 const EMPTY: ProjectImages = { cover: null, gallery: [] }
@@ -43,4 +45,19 @@ export function backgroundAt(index: number): string | null {
   const bgs = siteImages().backgrounds
   if (bgs.length === 0) return null
   return bgs[index % bgs.length]
+}
+
+/**
+ * Institution logo for a project: the first key in its fallback chain whose
+ * file is actually present. Returns null when nothing is available, so the
+ * caller falls back to the typographic monogram.
+ */
+export function logoFor(slug: string): string | null {
+  const keys = LOGO_KEYS_BY_SLUG[slug]
+  if (!keys) return null
+  for (const key of keys) {
+    const path = typed.logos?.[key]
+    if (path) return path
+  }
+  return null
 }

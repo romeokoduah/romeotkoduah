@@ -29,6 +29,22 @@ Images are served as-is — Next.js optimisation is off for static export, so
 **compress before committing.** Aim for under 300 KB per image; `.webp` is a
 good default.
 
+## Institution logos
+
+Where no photo exists, a card shows the commissioning institution's logo
+instead of a monogram. Logos live in `public/images/logos/<key>.<ext>` and
+`content/logos.ts` maps each project slug to an ordered list of keys — the
+first key with a file present wins, so a project can fall back from a centre to
+its parent university, and finally to the monogram.
+
+To add or change one: drop the file in `public/images/logos/`, then point the
+slug at it in `content/logos.ts`. The build validates the actual bytes and
+silently skips anything that is not a real image, so a bad download can never
+reach a live page.
+
+A photo always beats a logo, and a logo always beats a monogram — so adding
+`cover.jpg` to a project folder takes over from its logo automatically.
+
 ## After adding images
 
 ```powershell

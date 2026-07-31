@@ -10,7 +10,7 @@ import {
   projectsByPractice,
 } from '@/content'
 import type { Project } from '@/content'
-import { projectImages } from '@/lib/images'
+import { logoFor, projectImages } from '@/lib/images'
 import { Btn, Chip, Eyebrow, Section, Wide } from '@/components/site/primitives'
 import { ProjectCard } from '@/components/site/project-card'
 import { ProjectGallery } from '@/components/site/project-gallery'
@@ -79,6 +79,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
   const practice = PRACTICE_BY_KEY[project.practice]
   const accent = practice.accent
+  const logo = logoFor(project.slug)
   const { cover, gallery } = projectImages(project.slug)
   const related = relatedProjects(project)
 
@@ -104,6 +105,22 @@ export default async function ProjectDetailPage({ params }: PageProps) {
               <span aria-hidden>←</span> {practice.short}
             </Link>
           </Reveal>
+
+          {logo ? (
+            <Reveal delay={0.04}>
+              {/* Explicit height, auto width: several of these SVGs carry a
+                  viewBox but no intrinsic size, so max-* alone collapses them
+                  to zero inside a shrink-to-fit parent. */}
+              <div className="mt-5 inline-flex items-center bg-white px-4 py-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={logo}
+                  alt={`${project.org} logo`}
+                  className="h-[46px] w-auto max-w-[240px] object-contain"
+                />
+              </div>
+            </Reveal>
+          ) : null}
 
           <Reveal delay={0.06}>
             <h1 className="mt-4 max-w-4xl" style={{ color: accent }}>

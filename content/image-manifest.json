@@ -4,5 +4,30 @@
     "hero": null,
     "backgrounds": []
   },
-  "projects": {}
+  "projects": {},
+  "logos": {
+    "belmont-forum": "/images/logos/belmont-forum.jpg",
+    "bmz": "/images/logos/bmz.svg",
+    "capnet": "/images/logos/capnet.svg",
+    "climateworks": "/images/logos/climateworks.svg",
+    "daad": "/images/logos/daad.svg",
+    "ecowas": "/images/logos/ecowas.png",
+    "european-union": "/images/logos/european-union.svg",
+    "ghana-moen": "/images/logos/ghana-moen.png",
+    "ghana-think": "/images/logos/ghana-think.jpg",
+    "gwp": "/images/logos/gwp.svg",
+    "imperial": "/images/logos/imperial.svg",
+    "iom": "/images/logos/iom.svg",
+    "iwmi": "/images/logos/iwmi.jpg",
+    "kfw": "/images/logos/kfw.svg",
+    "rcees": "/images/logos/rcees.png",
+    "tsinghua": "/images/logos/tsinghua.svg",
+    "tu-berlin": "/images/logos/tu-berlin.svg",
+    "uenr": "/images/logos/uenr.png",
+    "ukri": "/images/logos/ukri.svg",
+    "undp": "/images/logos/undp.svg",
+    "unep": "/images/logos/unep.svg",
+    "unfccc": "/images/logos/unfccc.svg",
+    "world-bank": "/images/logos/world-bank.svg"
+  }
 }

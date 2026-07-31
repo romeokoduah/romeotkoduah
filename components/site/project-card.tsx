@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { PRACTICE_BY_KEY } from '@/content'
 import type { Project } from '@/content/types'
-import { projectImages } from '@/lib/images'
+import { logoFor, projectImages } from '@/lib/images'
 import { cn } from '@/lib/utils'
 
 const STOPWORDS = new Set([
@@ -29,10 +29,15 @@ function initials(org: string): string {
   if (parenthetical) return parenthetical[1].toUpperCase()
 
   // Everything before a dash or comma is the name; the rest is description.
-  const name = org.split(/[—–,]/)[0].replace(/[().]/g, ' ').trim()
+  const name = org.split(/[—–,]/)[0].replace(/[()./]/g, ' ').trim()
 
   const words = name.split(/\s+/).filter((w) => w && !STOPWORDS.has(w.toLowerCase()))
   if (words.length === 0) return org.slice(0, 4).toUpperCase()
+
+  // An existing acronym in the name beats initials composed from it —
+  // "ATEC / DESS Ghana" should read ATEC, not ADG.
+  const existing = words.find((w) => /^[A-Z]{3,6}$/.test(w))
+  if (existing) return existing
 
   // A single token that is already an acronym or a short name stands alone.
   if (words.length === 1) return words[0].toUpperCase().slice(0, 6)
@@ -49,6 +54,46 @@ function inverted(slug: string): boolean {
   let h = 0
   for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0
   return h % 2 === 1
+}
+
+/**
+ * Institution mark, shown when a logo for the project's organisation is
+ * available. Sits on paper rather than the accent fill — most logos are
+ * multi-colour and need a light ground — with the practice accent kept as a
+ * rule along the bottom so the colour coding survives.
+ */
+function LogoTile({
+  logo,
+  project,
+  accent,
+}: {
+  logo: string
+  project: Project
+  accent: string
+}) {
+  return (
+    <div
+      className="relative flex aspect-16/10 w-full items-center justify-center bg-white px-7 py-6"
+      style={{ borderBottom: `2px solid ${accent}` }}
+    >
+      {/* Marks vary from ~5:1 wordmarks (GWP) to ~1:2 portrait emblems (UNDP),
+          so cap both axes and let object-contain settle each one. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={logo}
+        alt={`${project.org} logo`}
+        loading="lazy"
+        decoding="async"
+        className="max-h-[84px] max-w-[76%] object-contain"
+      />
+      <span
+        className="absolute bottom-3 right-4 font-body text-[10px] font-bold uppercase tracking-[0.16em] text-ink/35"
+        aria-hidden
+      >
+        {project.period}
+      </span>
+    </div>
+  )
 }
 
 /**
@@ -100,6 +145,8 @@ export function ProjectCard({
 }) {
   const practice = PRACTICE_BY_KEY[project.practice]
   const { cover } = projectImages(project.slug)
+  // Photographs win over logos; logos win over the monogram.
+  const logo = cover ? null : logoFor(project.slug)
 
   return (
     <Link
@@ -121,6 +168,8 @@ export function ProjectCard({
             priority={priority}
           />
         </div>
+      ) : logo ? (
+        <LogoTile logo={logo} project={project} accent={practice.accent} />
       ) : (
         <FallbackTile project={project} accent={practice.accent} />
       )}

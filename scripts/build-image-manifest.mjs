@@ -5,7 +5,14 @@
  * changes needed. `cover.*` becomes the card image and detail hero; any other
  * image becomes part of the detail-page gallery, sorted by filename.
  */
-import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs'
 import { join, dirname, extname, basename } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -68,10 +75,53 @@ const site = {
   backgrounds,
 }
 
+/* ---- institution logos: public/images/logos/<key>.<ext> ------------------ */
+
+const logosDir = join(imagesDir, 'logos')
+const LOGO_EXTS = new Set([...EXTS, '.svg'])
+
+/**
+ * A logo downloaded from the web can easily be an HTML error page wearing an
+ * .svg extension. Check the actual bytes rather than trusting the extension —
+ * a missing logo degrades to a monogram, a broken one renders as a broken
+ * image on a live page.
+ * @param {string} file
+ */
+function isRealImage(file) {
+  const buf = readFileSync(file)
+  if (buf.length < 400) return false
+  const head = buf.subarray(0, 1024).toString('latin1')
+  if (/<!doctype html|<html[\s>]/i.test(head)) return false
+  if (buf[0] === 0x89 && buf.subarray(1, 4).toString('latin1') === 'PNG') return true
+  if (buf[0] === 0xff && buf[1] === 0xd8) return true // JPEG
+  if (head.startsWith('RIFF') && head.includes('WEBP')) return true
+  if (buf.subarray(0, 6).toString('latin1').startsWith('GIF8')) return true
+  // SVG may open with an XML declaration, a doctype or comments before <svg.
+  return /<svg[\s>]/i.test(buf.subarray(0, 8192).toString('utf8'))
+}
+
+/** @type {Record<string, string>} */
+const logos = {}
+const rejected = []
+if (existsSync(logosDir)) {
+  for (const f of readdirSync(logosDir)) {
+    const ext = extname(f).toLowerCase()
+    if (!LOGO_EXTS.has(ext)) continue
+    if (!isRealImage(join(logosDir, f))) {
+      rejected.push(f)
+      continue
+    }
+    logos[basename(f, extname(f))] = `/images/logos/${f}`
+  }
+}
+if (rejected.length > 0) {
+  console.warn(`image-manifest: skipped ${rejected.length} unusable logo file(s): ${rejected.join(', ')}`)
+}
+
 mkdirSync(dirname(outFile), { recursive: true })
 writeFileSync(
   outFile,
-  JSON.stringify({ site, projects: manifest }, null, 2) + '\n',
+  JSON.stringify({ site, projects: manifest, logos }, null, 2) + '\n',
   'utf8',
 )
 
@@ -82,5 +132,6 @@ const images = Object.values(manifest).reduce(
 )
 console.log(
   `image-manifest: ${count} project folder(s), ${images} project image(s); ` +
-    `portrait=${site.portrait ? 'yes' : 'no'}, backgrounds=${backgrounds.length}`,
+    `portrait=${site.portrait ? 'yes' : 'no'}, backgrounds=${backgrounds.length}, ` +
+    `logos=${Object.keys(logos).length}`,
 )
