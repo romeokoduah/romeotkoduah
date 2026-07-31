@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { cn } from '@/lib/utils'
 import { PRACTICES, PROFILE } from '@/content'
+import { SOCIAL_ICONS } from './icons'
 
 const NAV = [
   { label: 'About', href: '/about' },
@@ -80,18 +81,23 @@ export function SiteHeader() {
           </nav>
 
           {/* socials */}
-          <div className="mt-1 hidden items-center gap-6 lg:flex">
-            {SOCIALS.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                target={s.href.startsWith('mailto:') ? undefined : '_blank'}
-                rel="noopener noreferrer"
-                className="font-body text-[13px] font-semibold text-white/70 transition-colors duration-150 hover:text-white"
-              >
-                {s.label}
-              </a>
-            ))}
+          <div className="mt-2 hidden items-center gap-6 lg:flex">
+            {SOCIALS.map((s) => {
+              const Icon = SOCIAL_ICONS[s.label]
+              return (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target={s.href.startsWith('mailto:') ? undefined : '_blank'}
+                  rel="noopener noreferrer"
+                  title={s.label}
+                  className="text-white/75 transition-colors duration-150 hover:text-white"
+                >
+                  {Icon ? <Icon className="h-6 w-6" /> : null}
+                  <span className="sr-only">{s.label}</span>
+                </a>
+              )
+            })}
           </div>
 
           {/* mobile trigger */}
@@ -188,18 +194,23 @@ export function SiteHeader() {
                 Publications
               </Link>
             </nav>
-            <div className="flex flex-wrap gap-6 pt-8">
-              {SOCIALS.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target={s.href.startsWith('mailto:') ? undefined : '_blank'}
-                  rel="noopener noreferrer"
-                  className="font-body text-sm font-bold underline underline-offset-4"
-                >
-                  {s.label}
-                </a>
-              ))}
+            <div className="flex flex-wrap items-center gap-7 pt-8">
+              {SOCIALS.map((s) => {
+                const Icon = SOCIAL_ICONS[s.label]
+                return (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target={s.href.startsWith('mailto:') ? undefined : '_blank'}
+                    rel="noopener noreferrer"
+                    title={s.label}
+                    className="text-soft/85 transition-colors duration-150 hover:text-soft"
+                  >
+                    {Icon ? <Icon className="h-7 w-7" /> : null}
+                    <span className="sr-only">{s.label}</span>
+                  </a>
+                )
+              })}
             </div>
           </motion.div>
         )}
