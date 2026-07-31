@@ -72,6 +72,9 @@ rm -rf ${WebRoot}.old /tmp/romeotkoduah-site.tgz
 nginx -t >/dev/null 2>&1 && systemctl reload nginx
 echo swapped
 "@
+# This file is stored with CRLF endings on Windows; bash on the server would
+# read the carriage returns as part of each command ("set: -: invalid option").
+$remote = $remote -replace "`r", ""
 ssh @SshOpts $Server $remote
 if ($LASTEXITCODE -ne 0) { throw "Remote swap failed - the previous site is still live." }
 
