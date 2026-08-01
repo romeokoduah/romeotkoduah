@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { toggleLikeAction } from '@/app/blog/actions'
+import { toggleLikeAction } from '@/app/(site)/blog/actions'
 import { cn } from '@/lib/utils'
 
 function HeartIcon({ filled }: { filled: boolean }) {

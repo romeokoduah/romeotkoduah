@@ -1,9 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Oswald, Open_Sans } from 'next/font/google'
 import './globals.css'
-import { SiteHeader } from '@/components/site/site-header'
-import { SiteFooter } from '@/components/site/site-footer'
-import { ScrollProgress } from '@/components/ui/scroll-progress'
 
 const oswald = Oswald({
   subsets: ['latin'],
@@ -81,18 +78,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <style>{`.reveal{opacity:1!important;filter:none!important;transform:none!important}`}</style>
         </noscript>
       </head>
-      <body className="bg-paper text-ink antialiased">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:bg-forest focus:px-4 focus:py-2 focus:font-body focus:font-bold focus:text-soft"
-        >
-          Skip to content
-        </a>
-        <ScrollProgress className="h-[2px] bg-none bg-rust" />
-        <SiteHeader />
-        <main id="main">{children}</main>
-        <SiteFooter />
-      </body>
+      {/* The public masthead and footer live in app/(site)/layout.tsx, not
+          here, so the admin dashboard is not wrapped in site chrome. */}
+      <body className="bg-paper text-ink antialiased">{children}</body>
     </html>
   )
 }

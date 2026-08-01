@@ -128,17 +128,28 @@ export async function adjacentPosts(slug: string): Promise<{
   prev: { slug: string; title: string } | null
   next: { slug: string; title: string } | null
 }> {
+  // Every column is qualified: `posts` and the CTE both carry `published_at`,
+  // and an unqualified reference is ambiguous (Postgres 42702).
+  //
+  // Ordering falls back to `slug` when two posts share a timestamp, so
+  // previous/next stay stable and cannot point at each other.
   const rows = await sql<{ slug: string; title: string; rel: string }[]>`
     WITH current AS (
-      SELECT published_at FROM posts WHERE slug = ${slug} AND status = 'published'
+      SELECT p.published_at, p.slug
+      FROM posts p
+      WHERE p.slug = ${slug} AND p.status = 'published'
     )
-    (SELECT slug, title, 'prev' AS rel FROM posts, current
-      WHERE status = 'published' AND published_at < current.published_at
-      ORDER BY published_at DESC LIMIT 1)
+    (SELECT p.slug, p.title, 'prev' AS rel
+      FROM posts p, current c
+      WHERE p.status = 'published'
+        AND (p.published_at, p.slug) < (c.published_at, c.slug)
+      ORDER BY p.published_at DESC, p.slug DESC LIMIT 1)
     UNION ALL
-    (SELECT slug, title, 'next' AS rel FROM posts, current
-      WHERE status = 'published' AND published_at > current.published_at
-      ORDER BY published_at ASC LIMIT 1)
+    (SELECT p.slug, p.title, 'next' AS rel
+      FROM posts p, current c
+      WHERE p.status = 'published'
+        AND (p.published_at, p.slug) > (c.published_at, c.slug)
+      ORDER BY p.published_at ASC, p.slug ASC LIMIT 1)
   `
   return {
     prev: rows.find((r) => r.rel === 'prev') ?? null,

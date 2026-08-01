@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState, useTransition } from 'react'
 import type { FormEvent } from 'react'
-import { submitComment } from '@/app/blog/actions'
+import { submitComment } from '@/app/(site)/blog/actions'
 import { LIMITS } from '@/lib/blog-types'
 import { cn } from '@/lib/utils'
 

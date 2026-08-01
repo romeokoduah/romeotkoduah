@@ -1,3 +1,5 @@
+import { SiteHeader } from '@/components/site/site-header'
+import { SiteFooter } from '@/components/site/site-footer'
 import type { Metadata } from 'next'
 import { Btn, BtnRow, Eyebrow, Section, Wide } from '@/components/site/primitives'
 
@@ -10,6 +12,8 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
+    <>
+      <SiteHeader />
     <Section tone="forest" tall className="text-center">
       <Wide>
         <Eyebrow className="text-soft">404</Eyebrow>
@@ -28,5 +32,7 @@ export default function NotFound() {
         </BtnRow>
       </Wide>
     </Section>
+      <SiteFooter />
+    </>
   )
 }

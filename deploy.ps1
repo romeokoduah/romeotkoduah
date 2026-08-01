@@ -62,6 +62,10 @@ Copy-Item (Join-Path $Root "db") "$Staging\db" -Recurse -Force
 New-Item -ItemType Directory -Path "$Staging\scripts" -Force | Out-Null
 Copy-Item (Join-Path $Root "scripts\migrate.mjs") "$Staging\scripts\" -Force
 Copy-Item (Join-Path $Root "scripts\create-admin.mjs") "$Staging\scripts\" -Force
+Copy-Item (Join-Path $Root "scripts\seed-posts.mjs") "$Staging\scripts\" -Force
+if (Test-Path (Join-Path $Root "content\starter-posts.ts")) {
+    Copy-Item (Join-Path $Root "content\starter-posts.ts") "$Staging\content\" -Force
+}
 
 $fileCount = (Get-ChildItem $Staging -Recurse -File | Measure-Object).Count
 Ok "$fileCount files"
@@ -91,6 +95,21 @@ test -f ${AppDir}.new/server.js
 rm -rf ${AppDir}.old
 if [ -d ${AppDir} ]; then mv ${AppDir} ${AppDir}.old; fi
 mv ${AppDir}.new ${AppDir}
+
+# sharp and @node-rs/argon2 ship platform-specific binaries. The bundle is
+# built on Windows, so its natives are unusable here — swap in the Linux
+# builds kept in romeotkoduah-native. Without this, /admin 500s on every
+# deploy with "Failed to load native binding".
+NATIVE=/var/www/romeotkoduah-native/node_modules
+if [ -d "`$NATIVE" ]; then
+  rm -rf ${AppDir}/node_modules/@img ${AppDir}/node_modules/sharp ${AppDir}/node_modules/@node-rs
+  cp -r "`$NATIVE/@img"     ${AppDir}/node_modules/@img
+  cp -r "`$NATIVE/sharp"    ${AppDir}/node_modules/sharp
+  cp -r "`$NATIVE/@node-rs" ${AppDir}/node_modules/@node-rs
+else
+  echo "WARNING: `$NATIVE missing - admin will fail. See docs/deployment.md."
+fi
+
 set -a; . /root/romeotkoduah.env; set +a
 $migrateStep
 if pm2 describe ${AppName} > /dev/null 2>&1; then
