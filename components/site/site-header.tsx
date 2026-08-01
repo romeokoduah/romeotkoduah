@@ -11,6 +11,8 @@ import { SOCIAL_ICONS } from './icons'
 const NAV = [
   { label: 'About', href: '/about' },
   ...PRACTICES.map((p) => ({ label: p.short, href: p.href })),
+  { label: 'Writing', href: '/blog' },
+  { label: 'Gallery', href: '/gallery' },
   { label: 'Contact', href: '/contact' },
 ]
 
@@ -63,7 +65,7 @@ export function SiteHeader() {
           {/* desktop nav */}
           <nav
             aria-label="Primary"
-            className="mt-2 hidden flex-wrap items-center justify-center gap-x-8 gap-y-1 lg:flex xl:gap-x-[50px]"
+            className="mt-2 hidden flex-wrap items-center justify-center gap-x-5 gap-y-1 lg:flex xl:gap-x-7"
           >
             {NAV.map((item) => (
               <Link
@@ -130,7 +132,7 @@ export function SiteHeader() {
               >
                 Romeo T. Koduah
               </Link>
-              <nav aria-label="Primary, condensed" className="flex items-center gap-7">
+              <nav aria-label="Primary, condensed" className="flex items-center gap-5">
                 {NAV.map((item) => (
                   <Link
                     key={item.href}

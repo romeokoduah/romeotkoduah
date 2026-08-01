@@ -1,24 +1,29 @@
-# Build and deploy romeotkoduah.org to the Contabo VPS (nginx, static site).
+# Build and deploy romeotkoduah.org to the Contabo VPS.
 #
-# Usage:  ./deploy.ps1             build, upload, swap in
-#         ./deploy.ps1 -SkipBuild  upload the existing ./out as-is
+# Usage:  ./deploy.ps1             build, upload, restart
+#         ./deploy.ps1 -SkipBuild  upload the existing build as-is
+#         ./deploy.ps1 -Migrate    also run database migrations after upload
 #
-# The site is a Next.js static export, so nothing runs on the server — the
-# build happens here and only the artifact ships.
+# The site runs as a Next.js standalone server under PM2, proxied by nginx —
+# the same pattern as the other apps on this box. The build happens here; only
+# the artifact ships.
 
 param(
-    [switch]$SkipBuild
+    [switch]$SkipBuild,
+    [switch]$Migrate
 )
 
 $ErrorActionPreference = "Stop"
 
-$Server  = "root@169.58.42.182"
-$Key     = "$env:USERPROFILE\.ssh\contabo_deploy"
-$WebRoot = "/var/www/romeotkoduah.org"
-$Domain  = "romeotkoduah.org"
-$SshOpts = @("-i", $Key, "-o", "IdentitiesOnly=yes", "-o", "BatchMode=yes")
-$OutDir  = Join-Path $PSScriptRoot "out"
-$Tarball = Join-Path $env:TEMP "romeotkoduah-site.tgz"
+$Server   = "root@169.58.42.182"
+$Key      = "$env:USERPROFILE\.ssh\contabo_deploy"
+$AppDir   = "/var/www/romeotkoduah-app"
+$AppName  = "romeotkoduah"
+$Domain   = "romeotkoduah.org"
+$SshOpts  = @("-i", $Key, "-o", "IdentitiesOnly=yes", "-o", "BatchMode=yes")
+$Root     = $PSScriptRoot
+$Tarball  = Join-Path $env:TEMP "romeotkoduah-app.tgz"
+$Staging  = Join-Path $env:TEMP "romeotkoduah-staging"
 
 function Step($msg) { Write-Host "==> $msg" -ForegroundColor Cyan }
 function Ok($msg)   { Write-Host "    $msg" -ForegroundColor Green }
@@ -26,76 +31,105 @@ function Warn($msg) { Write-Host "    $msg" -ForegroundColor Yellow }
 
 # ----------------------------------------------------------------- build ----
 if (-not $SkipBuild) {
-    Step "Building static export"
+    Step "Building"
     npm run build
     if ($LASTEXITCODE -ne 0) { throw "Build failed - nothing was deployed." }
 }
 
-if (-not (Test-Path $OutDir)) { throw "No ./out directory. Run without -SkipBuild." }
-if (-not (Test-Path (Join-Path $OutDir "index.html"))) {
-    throw "./out has no index.html - the export looks incomplete. Aborting."
+$StandaloneDir = Join-Path $Root ".next\standalone"
+if (-not (Test-Path $StandaloneDir)) {
+    throw "No .next/standalone. Is `output: 'standalone'` still set in next.config.ts?"
 }
 
-$fileCount = (Get-ChildItem $OutDir -Recurse -File | Measure-Object).Count
-Ok "$fileCount files in ./out"
-
 # ------------------------------------------------------------------ pack ----
+# The standalone output omits static assets and public/ by design; they have to
+# be copied in beside it or every stylesheet and image 404s.
+Step "Assembling"
+if (Test-Path $Staging) { Remove-Item $Staging -Recurse -Force }
+New-Item -ItemType Directory -Path $Staging -Force | Out-Null
+
+Copy-Item "$StandaloneDir\*" $Staging -Recurse -Force
+New-Item -ItemType Directory -Path "$Staging\.next" -Force | Out-Null
+Copy-Item (Join-Path $Root ".next\static") "$Staging\.next\static" -Recurse -Force
+
+# public/ minus the media directory, which lives on the server and holds uploads
+$PublicSrc = Join-Path $Root "public"
+Copy-Item $PublicSrc "$Staging\public" -Recurse -Force
+if (Test-Path "$Staging\public\media") { Remove-Item "$Staging\public\media" -Recurse -Force }
+
+# migrations travel with the app so -Migrate can run them server-side
+Copy-Item (Join-Path $Root "db") "$Staging\db" -Recurse -Force
+New-Item -ItemType Directory -Path "$Staging\scripts" -Force | Out-Null
+Copy-Item (Join-Path $Root "scripts\migrate.mjs") "$Staging\scripts\" -Force
+Copy-Item (Join-Path $Root "scripts\create-admin.mjs") "$Staging\scripts\" -Force
+
+$fileCount = (Get-ChildItem $Staging -Recurse -File | Measure-Object).Count
+Ok "$fileCount files"
+
 Step "Packing"
 if (Test-Path $Tarball) { Remove-Item $Tarball -Force }
-tar -czf $Tarball -C $OutDir .
+tar -czf $Tarball -C $Staging .
 if ($LASTEXITCODE -ne 0) { throw "tar failed." }
-$sizeMb = [math]::Round((Get-Item $Tarball).Length / 1MB, 2)
-Ok "$sizeMb MB"
+Ok "$([math]::Round((Get-Item $Tarball).Length / 1MB, 2)) MB"
 
 # ---------------------------------------------------------------- upload ----
 Step "Uploading"
-scp @SshOpts $Tarball "${Server}:/tmp/romeotkoduah-site.tgz"
+scp @SshOpts $Tarball "${Server}:/tmp/romeotkoduah-app.tgz"
 if ($LASTEXITCODE -ne 0) { throw "Upload failed." }
 
 # --------------------------------------------------------------- swap in ----
-# Unpack into a staging directory, then swap. A failed unpack leaves the live
-# site untouched.
+# Unpack into a staging directory and swap, so a failed upload leaves the
+# running app untouched. node_modules ships inside the standalone bundle.
 Step "Swapping in"
+$migrateStep = if ($Migrate) { "cd $AppDir && node scripts/migrate.mjs" } else { "true" }
 $remote = @"
 set -e
-rm -rf ${WebRoot}.new
-mkdir -p ${WebRoot}.new
-tar -xzf /tmp/romeotkoduah-site.tgz -C ${WebRoot}.new
-test -f ${WebRoot}.new/index.html
-chown -R www-data:www-data ${WebRoot}.new
-find ${WebRoot}.new -type d -exec chmod 755 {} +
-find ${WebRoot}.new -type f -exec chmod 644 {} +
-rm -rf ${WebRoot}.old
-if [ -d ${WebRoot} ]; then mv ${WebRoot} ${WebRoot}.old; fi
-mv ${WebRoot}.new ${WebRoot}
-rm -rf ${WebRoot}.old /tmp/romeotkoduah-site.tgz
-nginx -t >/dev/null 2>&1 && systemctl reload nginx
+rm -rf ${AppDir}.new
+mkdir -p ${AppDir}.new
+tar -xzf /tmp/romeotkoduah-app.tgz -C ${AppDir}.new
+test -f ${AppDir}.new/server.js
+rm -rf ${AppDir}.old
+if [ -d ${AppDir} ]; then mv ${AppDir} ${AppDir}.old; fi
+mv ${AppDir}.new ${AppDir}
+set -a; . /root/romeotkoduah.env; set +a
+$migrateStep
+if pm2 describe ${AppName} > /dev/null 2>&1; then
+  pm2 reload ${AppName} --update-env
+else
+  cd ${AppDir} && pm2 start server.js --name ${AppName} --update-env
+  pm2 save
+fi
+rm -rf ${AppDir}.old /tmp/romeotkoduah-app.tgz
 echo swapped
 "@
-# This file is stored with CRLF endings on Windows; bash on the server would
-# read the carriage returns as part of each command ("set: -: invalid option").
 $remote = $remote -replace "`r", ""
 ssh @SshOpts $Server $remote
-if ($LASTEXITCODE -ne 0) { throw "Remote swap failed - the previous site is still live." }
+if ($LASTEXITCODE -ne 0) { throw "Remote swap failed - the previous build is still running." }
 
-# ----------------------------------------------------------------- verify ----
+# ---------------------------------------------------------------- verify ----
 Step "Verifying"
-$checks = @(
-    @{ Url = "https://$Domain/";             Expect = "200" },
-    @{ Url = "https://$Domain/about";        Expect = "200" },
-    @{ Url = "https://$Domain/publications"; Expect = "200" }
-)
+$checks = @("/", "/about", "/publications", "/blog", "/gallery")
 $failed = $false
-foreach ($c in $checks) {
-    $code = ssh @SshOpts $Server "curl -sk -o /dev/null -w '%{http_code}' $($c.Url)"
-    if ($code -eq $c.Expect) { Ok "$($c.Url) -> $code" }
-    else { Warn "$($c.Url) -> $code (expected $($c.Expect))"; $failed = $true }
+foreach ($path in $checks) {
+    $code = ssh @SshOpts $Server "curl -sk -o /dev/null -w '%{http_code}' https://$Domain$path"
+    if ($code -eq "200") { Ok "$path -> $code" }
+    else { Warn "$path -> $code (expected 200)"; $failed = $true }
+}
+
+# /admin must redirect to the login page, not serve the dashboard
+$adminCode = ssh @SshOpts $Server "curl -sk -o /dev/null -w '%{http_code}' https://$Domain/admin"
+if ($adminCode -eq "307" -or $adminCode -eq "302" -or $adminCode -eq "200") {
+    Ok "/admin -> $adminCode"
+} else {
+    Warn "/admin -> $adminCode"; $failed = $true
 }
 
 Remove-Item $Tarball -Force -ErrorAction SilentlyContinue
+Remove-Item $Staging -Recurse -Force -ErrorAction SilentlyContinue
 
 if ($failed) {
     Write-Host "`nDeployed, but some checks did not return the expected status." -ForegroundColor Yellow
+    Write-Host "Check logs with:  ssh ... 'pm2 logs $AppName --lines 50'" -ForegroundColor Yellow
 } else {
     Write-Host "`nLive at https://$Domain/" -ForegroundColor Green
 }
