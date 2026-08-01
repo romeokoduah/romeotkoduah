@@ -117,7 +117,7 @@ export default function AboutPage() {
           </Reveal>
           <Reveal delay={0.06}>
             <h2 className="mt-4 max-w-2xl text-ink">
-              Environmental engineering, then the politics that surrounds it.
+              Environmental engineering, then the diplomacy that surrounds it.
             </h2>
           </Reveal>
 
