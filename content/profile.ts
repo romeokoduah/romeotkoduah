@@ -19,8 +19,8 @@ export const PROFILE = {
     },
     {
       label: 'LinkedIn',
-      value: 'linkedin.com/in/ing-romeo-tweneboah-koduah',
-      href: 'https://linkedin.com/in/ing-romeo-tweneboah-koduah',
+      value: 'linkedin.com/in/ing-romeo-tweneboah-koduah-0bb30aaa',
+      href: 'https://www.linkedin.com/in/ing-romeo-tweneboah-koduah-0bb30aaa/',
     },
     {
       label: 'GitHub',
