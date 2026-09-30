@@ -2,7 +2,8 @@
 #
 # Usage:  ./deploy.ps1                                   build, upload, install
 #         ./deploy.ps1 -SkipBuild                        ship the existing build
-#         ./deploy.ps1 -Publish the-front-door-to-brussels   also publish that post
+#         ./deploy.ps1 -Publish <slug>                   also publish that post
+#         ./deploy.ps1 -Replace <slug>                   overwrite that post from content/
 #
 # Since the Sep 2026 rebuild the box runs every app as its own system user
 # under a hardened systemd unit (app-<name>), bound to 127.0.0.1 behind nginx.
@@ -12,7 +13,8 @@
 
 param(
     [switch]$SkipBuild,
-    [string]$Publish = ""
+    [string]$Publish = "",
+    [string]$Replace = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -65,11 +67,20 @@ $argonV  = node -p "require('./node_modules/@node-rs/argon2/package.json').versi
 if (Test-Path $Natives) { Remove-Item $Natives -Recurse -Force }
 New-Item -ItemType Directory -Path $Natives -Force | Out-Null
 Set-Content -Path (Join-Path $Natives "package.json") -Value '{"name":"natives","private":true}' -Encoding ascii
+# The registry occasionally drops a request, so retry, and show npm's own
+# output if every attempt fails.
 Push-Location $Natives
-npm install --no-audit --no-fund --no-package-lock --os=linux --cpu=x64 --libc=glibc "sharp@$sharpV" "@node-rs/argon2@$argonV" | Out-Null
-$npmExit = $LASTEXITCODE
+$npmExit = 1
+for ($attempt = 1; $attempt -le 3 -and $npmExit -ne 0; $attempt++) {
+    $npmOut = cmd /c "npm install --no-audit --no-fund --no-package-lock --os=linux --cpu=x64 --libc=glibc sharp@$sharpV @node-rs/argon2@$argonV 2>&1"
+    $npmExit = $LASTEXITCODE
+    if ($npmExit -ne 0 -and $attempt -lt 3) { Warn "npm install failed (attempt $attempt of 3), retrying"; Start-Sleep -Seconds 5 }
+}
 Pop-Location
-if ($npmExit -ne 0) { throw "Could not fetch Linux native modules." }
+if ($npmExit -ne 0) {
+    $npmOut | Select-Object -Last 20 | ForEach-Object { Write-Host "    $_" -ForegroundColor Yellow }
+    throw "Could not fetch Linux native modules - npm's output is above."
+}
 if (-not (Test-Path "$Natives\node_modules\@img\sharp-linux-x64")) { throw "sharp-linux-x64 missing after install." }
 if (-not (Test-Path "$Natives\node_modules\@node-rs\argon2-linux-x64-gnu")) { throw "argon2-linux-x64-gnu missing after install." }
 Ok "sharp $sharpV, argon2 $argonV (linux-x64-gnu)"
@@ -115,10 +126,13 @@ if ($LASTEXITCODE -ne 0) { throw "tar failed." }
 Ok "$([math]::Round((Get-Item $Tarball).Length / 1MB, 2)) MB"
 
 # Posts as plain SQL: the server's Node may not import TypeScript.
-$publishArgs = if ($Publish) { @("--publish", $Publish) } else { @() }
-$sqlText = node --no-warnings scripts/posts-sql.mjs @publishArgs
+$sqlArgs = @("--out", $PostsSql)
+if ($Publish) { $sqlArgs += @("--publish", $Publish) }
+if ($Replace) { $sqlArgs += @("--replace", $Replace) }
+# node writes the file itself: capturing its stdout here would decode it with
+# the console code page and garble every non-ASCII character.
+node --no-warnings scripts/posts-sql.mjs @sqlArgs | Out-Null
 if ($LASTEXITCODE -ne 0) { throw "Could not generate posts SQL." }
-[System.IO.File]::WriteAllText($PostsSql, (($sqlText -join "`n") + "`n"), (New-Object System.Text.UTF8Encoding $false))
 
 # LF endings, or bash chokes on the installer
 $installText = (Get-Content (Join-Path $Root "scripts\server\install.sh") -Raw) -replace "`r", ""
