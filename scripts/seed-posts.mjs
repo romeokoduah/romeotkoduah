@@ -1,5 +1,5 @@
 /**
- * Seeds the three starter posts as DRAFTS, so nothing is published without
+ * Seeds the starter posts as DRAFTS, so nothing is published without
  * Romeo reading it first.
  *
  *   node scripts/seed-posts.mjs
@@ -47,9 +47,9 @@ try {
       continue
     }
     await sql`
-      INSERT INTO posts (slug, title, excerpt, body_md, tags, status, reading_minutes)
+      INSERT INTO posts (slug, title, excerpt, body_md, cover_url, tags, status, reading_minutes)
       VALUES (${post.slug}, ${post.title}, ${post.excerpt}, ${post.bodyMd},
-              ${post.tags}, 'draft', ${readingMinutes(post.bodyMd)})
+              ${post.coverUrl ?? null}, ${post.tags}, 'draft', ${readingMinutes(post.bodyMd)})
     `
     console.log(`  created ${post.slug} (${readingMinutes(post.bodyMd)} min read, draft)`)
     created++
