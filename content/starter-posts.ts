@@ -6,6 +6,8 @@ export interface StarterPost {
   bodyMd: string
   /** Served from public/, pre-cropped to the 21:9 cover frame. */
   coverUrl?: string
+  /** Slugs this post was published under before; the seed renames them. */
+  previousSlugs?: string[]
 }
 
 /**
@@ -231,78 +233,73 @@ What would have to be true before deployment is a longer list than the build was
 None of that is software. All of it is the reason software like this succeeds or fails — which is, in the end, the same argument the platform itself makes about child protection: the hard part was never the individual capability. It was the handoff.`,
   },
   {
-    slug: 'the-front-door-to-brussels',
-    title: 'The Front Door to Brussels: A Day with the Youth Sounding Board Ghana',
+    slug: 'ysb-ghana-eu-knowledge-policy-training',
+    previousSlugs: ['the-front-door-to-brussels'],
+    title: 'Facilitating EU Knowledge and Policy Frameworks Training for the Youth Sounding Board Ghana',
     excerpt:
-      'Eight young Ghanaians already had a seat at the European Union’s table. What they had never been given was a map of the room. This is the story of the day we drew one together in Accra.',
-    tags: ['youth', 'eu', 'training', 'policy dialogue', 'global gateway', 'ghana'],
+      'On 8 May 2026 I facilitated Module 1 of the Youth Sounding Board Ghana capacity-building programme in Accra, covering EU institutions, EU decision-making and consultation entry points, and Global Gateway and NDICI-Global Europe.',
+    tags: ['youth', 'eu', 'training', 'facilitation', 'policy dialogue', 'ghana'],
     coverUrl: '/images/blog/ysb-ghana-eu-training/cover.jpg',
-    bodyMd: `The backdrop was purple, printed edge to edge with the words *Youth Sounding Board* and the twelve gold stars of the European Union. On the tables in front of it sat flipchart paper, marker pens, and laptops covered in the stickers of people who campaign for things: *Never Give Up*, *Malaria Youth Champion*, *Justice*. It was Friday, 8 May 2026, at the San Marino Hotel in Osu, and by eleven o’clock the room was ready.
+    bodyMd: `On 8 May 2026 I facilitated a one-day training for members of the Youth Sounding Board (YSB) Ghana at the San Marino Hotel, Osu, Accra. The session was Module 1, EU Knowledge and Policy Frameworks, of the YSB Ghana capacity-building programme. It was delivered under the EU-funded project Support to Youth Sounding Board and Youth Participation in Policy Dialogue in Ghana, implemented by Eurecna Srl for the Delegation of the European Union to Ghana.
 
-I was standing with a microphone in my hand, listening to a young woman explain which three EU institutions she would need to reach to move a single youth issue in Ghana. She had them right. That moment, more than any score at the end of the day, is the one I keep.
+## Background
 
-## Five days’ notice
+The YSB Ghana advises the EU Delegation on youth perspectives in its work in Ghana. Members had served on the board for about a year and had taken part in EU Delegation events, but had not yet received structured training together.
 
-The request arrived on a Sunday. Eurecna, the Italian firm implementing the EU-funded *Support to Youth Sounding Board and Youth Participation in Policy Dialogue in Ghana* project, was looking for a facilitator for the first module of the board’s capacity-building programme. My friend and fellow youth advocate Noah Bugre had put my name forward. The training was the following Friday.
+The content of the module was set by a training needs assessment carried out among the members, supported by focus group discussions and key informant interviews. It identified one priority gap: limited operational understanding of EU institutional structures and decision-making processes. The objective of Module 1 was to close that gap and show members where, and how, YSB input can realistically influence EU processes.
 
-I said yes within the hour. By that afternoon I had the brief: **Module 1, EU Knowledge and Policy Frameworks**, a full day, face to face, built on a training needs assessment the board’s own members had completed. Their answer to “what do you most need?” had been unambiguous. Not more inspiration. Not another launch event. They needed a working understanding of how the European Union is structured and how it actually makes decisions.
+I was engaged by Eurecna as the facilitator for Module 1. My co-facilitator, Noah Bugre, delivered Module 2 on advocacy and policy product development.
 
-That is an unusual and admirable thing for a group of young leaders to say about themselves. The members had been on the board for about a year. They had attended EU Delegation events and been through an induction. They had a seat at the table. What nobody had yet handed them was a map of the room: who holds the pen, when the pen moves, and at which moments a youth voice can still change what gets written.
+## Training content
 
-## Building a day that would not feel like a lecture
+The day was organised in three modules.
 
-Five days is not long to design eight hours of learning for people who will judge you by whether the day was worth giving up. I built it in three modules, and each one ended with the participants doing something rather than hearing something.
+**Module 1.A: EU Institutional Architecture.** An overview of the European Union and the roles of its seven main institutions, followed by the bodies most relevant to the YSB: the European External Action Service, the EU Delegation to Ghana, and the European Economic and Social Committee and Committee of the Regions as formal channels for civil society.
 
-**Module 1.A, EU Institutional Architecture**, walked through the seven institutions and the bodies that matter most for Ghana: the European External Action Service, the EU Delegation in Accra, and the advisory committees through which civil society can engage formally. **Module 1.B, Decision-Making Cycles and Consultation Entry Points**, was the heart of the day. **Module 1.C, Global Gateway and NDICI–Global Europe**, connected everything to the money.
+**Module 1.B: Decision-Making Cycles and Consultation Entry Points.** The distinction between the EU legislative cycle, which makes laws, and the programming cycle, which allocates funding, and why the YSB's main leverage lies in the programming cycle. The session traced the programming chain from the Multiannual Financial Framework to NDICI-Global Europe, the Multi-annual Indicative Programme (MIP) for Ghana and the Annual Action Plans. It identified the pre-proposal stage as the point at which external stakeholders can contribute most effectively, and introduced the European Commission's Have Your Say portal, including how to set keyword alerts.
 
-Midweek, plans shifted. The training moved from the EU Delegation’s premises to the hotel, and the Delegation officer who was to present the EU–Ghana cooperation framework could no longer attend. So that material came to me as well, folded into the last module. It turned out to be the right place for it. The country-level picture lands best once people already understand the machinery above it.
+**Module 1.C: Global Gateway and NDICI-Global Europe.** Global Gateway as the EU's external investment strategy and its five priority sectors (digital, climate and energy, transport, health, and education and research); NDICI-Global Europe as the financing instrument behind it; Ghana's MIP priorities; and the Team Europe approach to delivery. The EU-Ghana cooperation framework, originally planned as a separate session by an EU Delegation officer, was incorporated into this module.
 
-Every module opened with a warm-up poll to find out what the room already knew, and every module closed with a game: *Match-the-Institution*, *Sequence-the-Steps*, and a *True-or-False* stand-up round that got everyone out of their chairs in the late afternoon, which is exactly when a room needs it.
+## Methodology
 
-## The one idea that changes everything
+The training used a participatory approach. Each module opened with learning objectives and a short poll on prior knowledge, moved through content supported by EU-Ghana examples, and closed with a group exercise and a knowledge check (Match-the-Institution, Sequence-the-Steps, and a True-or-False round).
 
-If the members took one thing home, I wanted it to be this: the European Union runs two cycles, and they are not the same.
+Participants worked in groups organised by YSB thematic areas. Each group exercise ended with a two-minute presentation to plenary, framed as a briefing to the Head of the EU Delegation.
 
-There is the **legislative cycle**, which makes laws. And there is the **programming cycle**, which spends money. The first is where the headlines are. The second is where a youth advisory body in Ghana has real leverage, because the programming chain runs from the EU’s long-term budget down to NDICI–Global Europe, then to Ghana’s Multi-annual Indicative Programme, then to the Annual Action Plans that decide what actually gets funded on the ground.
+## Group outputs
 
-> Influence is mostly a matter of timing. By the time a proposal is public, the window for shaping it has usually closed.
+Each group produced three working documents:
 
-We spent real time on that point. The pre-proposal stage is the only one at which outside voices reliably get in. So we opened the European Commission’s *Have Your Say* portal together and set up keyword alerts for Ghana, Africa, youth and NDICI. It is a small, practical thing. It is also the difference between reacting to decisions and being consulted on them.
+- **Institutional map:** one priority youth issue, the three EU institutions most relevant to it, and an entry point for each.
+- **Engagement calendar:** three EU consultation windows in 2026, with a YSB action and expected output for each.
+- **Global Gateway project pitch:** a youth-focused project for Ghana in one Global Gateway sector, with objective, target group, partners and alignment to MIP Ghana priorities.
 
-## Three exercises, one portfolio
+![Climate group presenting its Global Gateway project pitch](/images/blog/ysb-ghana-eu-training/climate-pitch.jpg)
 
-The members worked in groups organised by the board’s own thematic areas, and every exercise was pitched back to the room as though we were briefing the Head of the EU Delegation.
+Issues addressed by the groups included education access, climate and renewable energy transitions, and youth economic inclusion. The education group, for example, presented a project on youth unemployment linked to technical and vocational education and training (TVET), identifying Ghana's TVET service, GIZ and the EU Delegation as partners and aligning it with the green jobs priority. Several pitches included Team Europe partners such as the EIB, GIZ and AFD.
 
-In **Map Your Issue**, each group chose one priority youth issue, named the three EU institutions most relevant to acting on it, and defined an entry point for each: what to say, when to say it, and how. In **Build Your Engagement Calendar**, they identified three EU consultation windows in 2026 and attached a concrete action and output to each. In **Pitch a Global Gateway Project**, they chose a Global Gateway sector (digital, climate and energy, transport, health, or education and research) and designed a project for Ghana.
+![Education group presenting its TVET and youth employment project](/images/blog/ysb-ghana-eu-training/education-pitch.jpg)
 
-![The climate group pitches its Global Gateway project to the room](/images/blog/ysb-ghana-eu-training/climate-pitch.jpg)
+## Results
 
-The pitches were the best part of my day. The climate group stood at the flipchart and argued for their project as if the funding decision were being made that afternoon. The education group took on unemployment among young people leaving technical and vocational education. They framed it as a problem of infrastructure and relevance, named Ghana’s TVET service, GIZ and the EU Delegation as partners, and tied it directly to the green jobs priority in Ghana’s programme. Several groups brought Team Europe partners such as the EIB, GIZ and AFD into their designs without being prompted, which told me the idea of Team Europe had landed.
+Eight YSB members completed the training and the post-training assessment.
 
-![The education group presents its TVET and youth unemployment project](/images/blog/ysb-ghana-eu-training/education-pitch.jpg)
+- All eight participants answered all seven knowledge-check questions correctly (100%).
+- Mean self-rated confidence, on a five-point scale, was 4.62 on Global Gateway and what it means for Ghana, 4.57 on the EU decision-making process, 4.50 on identifying entry points for youth engagement, 4.50 on EU-Ghana cooperation, and 4.00 on familiarity with EU-funded programmes in Ghana.
 
-By the end of the day, every group had produced three working documents: an institutional map, an engagement calendar and a project pitch. Together they make a real advocacy portfolio. Not notes from a training, but tools for the year ahead.
+The lowest score, on programme-level familiarity, identifies the area for reinforcement in later modules. In written feedback, participants most often cited the EU decision-making cycle, the role of the EU Delegation as the entry point to EU institutions, and the distinction between Global Gateway and NDICI-Global Europe. Eurecna reported positive feedback on the training from both the EU Delegation and YSB members.
 
-## What the numbers said, and what they didn’t
+## Recommendations
 
-All eight members who took part completed the post-training assessment, and every one of them answered all seven knowledge questions correctly: who proposes EU legislation, what Global Gateway is for, when stakeholders can contribute most effectively, which instrument finances Global Gateway, and more. Mean confidence reached 4.62 out of 5 on Global Gateway and what it means for Ghana, and 4.57 on the EU decision-making process.
+In the activity report I recommended:
 
-The lowest score was 4.00, on familiarity with the specific EU-funded programmes running in Ghana. Honestly, I was glad to see it. It showed exactly where the next module should push, and I wrote it into my recommendations.
+1. Retaining the participatory methodology for subsequent modules.
+2. Setting up a shared Have Your Say alert for the YSB covering Ghana, Africa, youth and NDICI.
+3. Complementary training in communication skills, project management, and monitoring and evaluation.
+4. A short orientation, led jointly by the EU Delegation and the YSB coordination team, to reconfirm the YSB's advisory role, representation protocols and the formal channels for submitting its positions.
 
-The line I return to, though, came from the reflection sheets. One participant wrote that, unlike other trainings, this one *didn’t just explain concepts in isolation*. It showed how to turn analysis into structured influence inside the systems the EU actually uses. Another answer gave me the title of this post: the EU Delegation is **the front door to Brussels**.
+## Acknowledgements
 
-## Carrying it forward
-
-Noah, who brought me into this work, took on Module 2 on advocacy and policy product development, carrying the members from understanding the system to writing for it. Having a co-facilitator whose half of the programme builds directly on yours is a rare gift, and I am grateful for it.
-
-A few days later, Eurecna wrote to say that both the EU Delegation and the board’s members had sent very positive feedback about the facilitation. In my report I recommended keeping the participatory method; setting up a shared *Have Your Say* alert so that no consultation window is missed; following Module 1 with training in communication, project management, and monitoring and evaluation; and holding a short orientation, led jointly by the Delegation and the board’s coordination team, to reconfirm the board’s advisory role and the formal channels through which its positions reach the EU.
-
-## What stays with me
-
-We talk a great deal about giving young people a voice in policy. We talk much less about the unglamorous knowledge that makes a voice count: which office, which document, which month. A seat at the table is an invitation. Knowing how the table works is what turns the invitation into influence.
-
-On that Friday in Accra, eight young Ghanaians spent a full day learning exactly that. Then they stood up, one group after another, and showed the room they could use it. I left with the feeling every facilitator hopes for: that the room had given me as much as I gave it.
-
-My thanks to Eurecna and the EU Delegation to Ghana for their trust, to Noah Bugre for the partnership, and to the members of the Youth Sounding Board Ghana for a day of real work, sharp questions and very good pitches.`,
+I thank Eurecna Srl and the Delegation of the European Union to Ghana for the opportunity, Noah Bugre for the collaboration, and the members of the YSB Ghana for their participation.`,
   },
 ]
