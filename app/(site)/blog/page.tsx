@@ -1,13 +1,12 @@
 import type { Metadata } from 'next'
 import { listPublishedPosts, listTags } from '@/lib/blog'
-import { PageHero } from '@/components/site/page-hero'
 import { Section, Wide } from '@/components/site/primitives'
 import { Reveal } from '@/components/site/reveal'
+import { ArchiveList } from '@/components/blog/archive-list'
+import { BlogMasthead } from '@/components/blog/blog-masthead'
 import { EmptyState } from '@/components/blog/empty-state'
-import { FeaturedPost } from '@/components/blog/featured-post'
-import { PostRow } from '@/components/blog/post-row'
-import { TagFilter } from '@/components/blog/tag-filter'
-import { ACCENT_HEX } from '@/components/blog/shared'
+import { LeadStory } from '@/components/blog/lead-story'
+import { TopicBar } from '@/components/blog/topic-bar'
 
 /**
  * Rendered per request. Posts, tags and like counts all live in Postgres, and
@@ -17,7 +16,7 @@ import { ACCENT_HEX } from '@/components/blog/shared'
 export const dynamic = 'force-dynamic'
 
 const DESCRIPTION =
-  'Writing on hydrology, climate policy, earth observation and the digital systems built around them — by Romeo Tweneboah Koduah.'
+  'Reports, field notes and arguments on water, energy and climate — trainings, projects and policy processes, by Romeo Tweneboah Koduah.'
 
 export const metadata: Metadata = {
   title: 'Writing',
@@ -39,51 +38,38 @@ export default async function BlogIndexPage({ searchParams }: PageProps) {
   const { tag } = await searchParams
   const active = (Array.isArray(tag) ? tag[0] : tag)?.trim() || undefined
 
-  const [posts, tags] = await Promise.all([listPublishedPosts(active), listTags()])
+  // One query for the whole archive: the masthead counts the collection, and
+  // the filter is applied here rather than in SQL. The archive is small.
+  const [all, tags] = await Promise.all([listPublishedPosts(), listTags()])
+  const posts = active ? all.filter((p) => p.tags.includes(active)) : all
   const [lead, ...rest] = posts
+
+  const minutes = all.reduce((sum, p) => sum + p.readingMinutes, 0)
 
   return (
     <>
-      <PageHero
-        eyebrow="Writing"
-        title="Notes from the water, energy and climate desk."
-        lede="Field notes, method write-ups and arguments about policy — the reasoning behind the projects, written out at length rather than compressed into a slide."
-        accent={ACCENT_HEX}
-      />
+      <BlogMasthead pieces={all.length} topics={tags.length} minutes={minutes} />
 
       <Section>
         <Wide>
-          {tags.length > 0 ? (
-            <Reveal>
-              <TagFilter tags={tags} active={active} />
-            </Reveal>
-          ) : null}
+          <Reveal>
+            <TopicBar tags={tags} total={all.length} active={active} />
+          </Reveal>
 
-          {posts.length === 0 ? (
-            <Reveal delay={0.06}>
-              <div className={tags.length > 0 ? 'mt-s30' : undefined}>
-                <EmptyState tag={active} />
-              </div>
-            </Reveal>
-          ) : (
-            <>
+          <div className={tags.length > 0 ? 'mt-s30' : undefined}>
+            {lead ? (
+              <>
+                <Reveal delay={0.06}>
+                  <LeadStory post={lead} index={1} />
+                </Reveal>
+                <ArchiveList posts={rest} startIndex={2} />
+              </>
+            ) : (
               <Reveal delay={0.06}>
-                <div className={tags.length > 0 ? 'mt-s30' : undefined}>
-                  <FeaturedPost post={lead} />
-                </div>
+                <EmptyState tag={active} />
               </Reveal>
-
-              {rest.length > 0 ? (
-                <div className="mt-s50 grid gap-x-s30 gap-y-s30 md:grid-cols-2">
-                  {rest.map((post, i) => (
-                    <Reveal key={post.id} delay={0.05 * (i % 4)} className="h-full">
-                      <PostRow post={post} />
-                    </Reveal>
-                  ))}
-                </div>
-              ) : null}
-            </>
-          )}
+            )}
+          </div>
         </Wide>
       </Section>
     </>
