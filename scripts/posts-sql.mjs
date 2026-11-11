@@ -19,6 +19,7 @@
 import { randomBytes } from 'node:crypto'
 import { writeFileSync } from 'node:fs'
 import { STARTER_POSTS } from '../content/starter-posts.ts'
+import { GALLERY_ALBUMS } from '../content/gallery.ts'
 
 const args = process.argv.slice(2)
 
@@ -94,7 +95,47 @@ WHERE slug = ${lit(slug)} AND status = 'draft';`,
   )
 }
 
+// A post that names its own publication date (the date of the event it
+// reports) carries that date once published, so the archive reads in the
+// order things happened rather than the order they were deployed.
+for (const p of STARTER_POSTS) {
+  if (!p.publishedAt) continue
+  out.push(
+    `UPDATE posts SET published_at = ${lit(p.publishedAt)}::timestamptz
+WHERE slug = ${lit(p.slug)} AND status = 'published'
+  AND published_at IS DISTINCT FROM ${lit(p.publishedAt)}::timestamptz;`,
+  )
+}
+
+// Gallery albums shipped in content/gallery.ts. An existing album keeps its
+// title and description; a photo is added only if its URL is not present yet.
+for (const album of GALLERY_ALBUMS) {
+  const base = `/images/gallery/${album.slug}`
+  out.push(
+    `INSERT INTO albums (slug, title, description)
+VALUES (${lit(album.slug)}, ${lit(album.title)}, ${lit(album.description)})
+ON CONFLICT (slug) DO NOTHING;`,
+  )
+  album.photos.forEach((p, i) => {
+    const url = `${base}/${p.file}.webp`
+    out.push(
+      `INSERT INTO photos (album_id, url, thumb_url, width, height, tone, caption, alt, taken_at, sort)
+SELECT a.id, ${lit(url)}, ${lit(`${base}/${p.file}-thumb.webp`)}, ${p.width}, ${p.height}, ${lit(p.tone)},
+       ${lit(p.caption)}, ${lit(p.caption)}, ${lit(album.takenAt)}::timestamptz, ${i}
+FROM albums a WHERE a.slug = ${lit(album.slug)}
+  AND NOT EXISTS (SELECT 1 FROM photos WHERE url = ${lit(url)});`,
+    )
+  })
+  if (album.photos.length > 0) {
+    out.push(
+      `UPDATE albums SET cover_photo_id = (SELECT id FROM photos WHERE url = ${lit(`${base}/${album.photos[0].file}.webp`)} LIMIT 1)
+WHERE slug = ${lit(album.slug)} AND cover_photo_id IS NULL;`,
+    )
+  }
+}
+
 out.push(`SELECT slug, status, (title || excerpt || body_md) LIKE ${MOJIBAKE} AS still_garbled FROM posts ORDER BY created_at;`)
+out.push(`SELECT a.slug AS album, count(p.id) AS photos FROM albums a LEFT JOIN photos p ON p.album_id = a.id GROUP BY a.slug;`)
 out.push('COMMIT;')
 
 writeFileSync(outPath, out.join('\n\n') + '\n', 'utf8')
