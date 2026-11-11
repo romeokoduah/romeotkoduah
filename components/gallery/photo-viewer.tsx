@@ -6,8 +6,8 @@ import { motion, useReducedMotion } from 'motion/react'
 import type { Photo } from '@/lib/blog-types'
 import { formatDate } from '@/lib/blog-types'
 
-/** Near-black rather than pure black — warm photography sits better on it. */
-const BACKDROP = 'rgba(11, 13, 12, 0.97)'
+/** The site's deep-river navy, solid — photographs sit on a dark field, not a veil. */
+const BACKDROP = 'var(--color-ink)'
 const EASE = [0.25, 0.46, 0.45, 0.94] as const
 
 /** Pixels of travel before a touch gesture counts. */
@@ -32,14 +32,14 @@ export function PhotoViewer({
   photos,
   index,
   albumTitle,
-  accent,
   onNavigate,
   onClose,
 }: {
   photos: Photo[]
   index: number
   albumTitle: string
-  accent: string
+  /** Kept for call-site compatibility; the viewer draws in the fixed palette. */
+  accent?: string
   onNavigate: (next: number) => void
   onClose: () => void
 }) {
@@ -217,7 +217,7 @@ export function PhotoViewer({
   }
 
   const arrowClass =
-    'pointer-events-auto flex h-12 w-12 items-center justify-center border-2 border-soft/45 bg-transparent font-body text-lg leading-none text-soft opacity-0 transition-[opacity,background-color,color] duration-150 hover:bg-soft hover:text-ink focus-visible:opacity-100 group-hover/viewer:opacity-100 [@media(hover:none)]:opacity-100'
+    'pointer-events-auto flex h-12 w-12 items-center justify-center bg-ink font-body text-[1.25rem] leading-none text-paper opacity-0 transition-[opacity,background-color,color] duration-150 hover:bg-sky hover:text-ink focus-visible:opacity-100 group-hover/viewer:opacity-100 [@media(hover:none)]:opacity-100'
 
   return (
     <motion.div
@@ -242,7 +242,7 @@ export function PhotoViewer({
         className="flex shrink-0 items-center justify-between gap-4 px-s20 py-4"
         onClick={(event) => event.stopPropagation()}
       >
-        <p className="min-w-0 truncate font-body text-[11px] font-bold uppercase tracking-[0.18em] text-soft/50">
+        <p className="min-w-0 truncate font-body text-[0.9375rem] font-medium text-paper">
           {albumTitle}
         </p>
         <button
@@ -252,7 +252,7 @@ export function PhotoViewer({
             event.stopPropagation()
             onClose()
           }}
-          className="shrink-0 border-2 border-soft/50 px-4 py-2 font-body text-sm font-bold text-soft transition-colors duration-150 hover:bg-soft hover:text-ink"
+          className="shrink-0 bg-paper px-5 py-2.5 font-body text-[0.9375rem] font-medium text-ink transition-colors duration-150 hover:bg-sky"
         >
           Close
         </button>
@@ -318,19 +318,15 @@ export function PhotoViewer({
         className="shrink-0 px-s20 pb-5 pt-3"
         onClick={(event) => event.stopPropagation()}
       >
-        <div
-          className="mx-auto flex max-w-(--container-wide) items-baseline justify-between gap-6 border-t pt-3"
-          style={{ borderColor: 'rgba(248, 246, 246, 0.16)' }}
-        >
-          <p className="min-h-[1.25rem] min-w-0 font-body text-sm leading-snug text-soft/80">
+        <div className="mx-auto flex max-w-(--container-wide) items-baseline justify-between gap-6 pt-3">
+          <p className="min-h-[1.5rem] min-w-0 font-body text-[0.9375rem] leading-snug text-paper">
             {caption}
-            {caption && taken ? <span className="text-soft/40"> · </span> : null}
-            {taken ? <span className="text-soft/45">{taken}</span> : null}
+            {caption && taken ? <span> · </span> : null}
+            {taken ? <span className="text-mist">{taken}</span> : null}
           </p>
           <p
             aria-live="polite"
-            className="shrink-0 font-head text-sm tabular-nums"
-            style={{ color: accent }}
+            className="shrink-0 font-body text-[0.9375rem] tabular-nums text-paper"
           >
             {index + 1} / {total}
           </p>

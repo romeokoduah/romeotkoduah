@@ -46,10 +46,10 @@ export function Comments({
 
   return (
     <section id="comments" className="scroll-mt-28">
-      <h2 className="font-head text-(length:--text-h3) leading-tight text-indigo">
+      <h2 className="font-head text-(length:--text-h3) leading-tight text-ink">
         {approved === 0 ? 'Comments' : plural(approved, 'comment')}
       </h2>
-      <p className="mt-3 max-w-[52ch] font-body text-[15px] leading-relaxed text-ink/65">
+      <p className="mt-3 max-w-[52ch] font-body leading-relaxed text-ink">
         Give a name or stay anonymous. Everything is read before it appears, so
         there is a wait between posting and publication.
       </p>
@@ -62,7 +62,7 @@ export function Comments({
           appearing somewhere below the fold. */}
       <div role="status" aria-live="polite">
         {notice ? (
-          <p className="mt-6 border-l-4 border-indigo bg-soft px-5 py-4 font-body text-[15px] leading-relaxed text-ink/80">
+          <p className="mt-6 bg-sky px-5 py-4 font-body leading-relaxed text-ink">
             {notice}
           </p>
         ) : null}
@@ -91,7 +91,7 @@ export function Comments({
           ))}
         </ul>
       ) : (
-        <p className="mt-s30 border-t-2 border-ink/12 pt-6 font-body text-[15px] text-ink/55">
+        <p className="mt-s30 font-body text-muted">
           No comments here yet. Yours would be the first.
         </p>
       )}

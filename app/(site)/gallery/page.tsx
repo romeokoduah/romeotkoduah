@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { listAlbums, listRecentPhotos } from '@/lib/gallery'
 import { PageHero } from '@/components/site/page-hero'
-import { Eyebrow, Section, Wide } from '@/components/site/primitives'
+import { Section, Wide } from '@/components/site/primitives'
 import { Reveal } from '@/components/site/reveal'
 import { AlbumCard } from '@/components/gallery/album-card'
 import { PhotoGrid } from '@/components/gallery/photo-grid'
@@ -10,7 +10,7 @@ import { PhotoGrid } from '@/components/gallery/photo-grid'
 export const dynamic = 'force-dynamic'
 
 /** `--color-emerald`, as a literal — inline colour maths needs the hex. */
-const ACCENT_HEX = '#158753'
+const ACCENT_HEX = '#0e1822'
 
 export const metadata: Metadata = {
   title: 'Gallery',
@@ -35,16 +35,14 @@ export default async function GalleryIndexPage() {
   return (
     <>
       <PageHero
-        eyebrow="Gallery"
         title="Photographs"
         lede="Fieldwork, instrumentation and the people behind the data — river basins, workshops and the places where the modelling meets the ground."
-        accent={ACCENT_HEX}
       />
 
       {albums.length > 0 ? (
         <Section>
           <Wide>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-x-6 gap-y-s40 sm:grid-cols-2 lg:grid-cols-3">
               {albums.map((album, i) => (
                 <Reveal key={album.id} delay={0.05 * (i % 3)}>
                   <AlbumCard album={album} accent={ACCENT_HEX} />
@@ -56,12 +54,9 @@ export default async function GalleryIndexPage() {
       ) : loose.length > 0 ? (
         <Section>
           <Wide>
-            <Reveal>
-              <Eyebrow style={{ color: ACCENT_HEX }}>Recent</Eyebrow>
-            </Reveal>
-            <Reveal delay={0.06}>
-              <h2 className="mt-3 max-w-3xl">Not yet sorted into albums</h2>
-            </Reveal>
+            <h2 data-rise className="max-w-4xl text-ink">
+              Recent, not yet sorted into albums
+            </h2>
             <div className="mt-s30">
               <PhotoGrid
                 photos={loose}
@@ -74,12 +69,15 @@ export default async function GalleryIndexPage() {
       ) : (
         <Section tone="soft">
           <Wide>
-            <div
-              className="max-w-(--container-measure) border-2 bg-paper p-s30"
-              style={{ borderColor: ACCENT_HEX }}
-            >
-              <h2 style={{ color: ACCENT_HEX }}>Still in the darkroom</h2>
-              <p className="mt-6 font-body text-(length:--text-fluid-sm) leading-[1.75] text-ink/85">
+            <div className="max-w-(--container-measure)">
+              <h2 data-rise className="text-ink">
+                Still in the darkroom
+              </h2>
+              <p
+                data-rise
+                style={{ '--i': 1 } as React.CSSProperties}
+                className="mt-6 font-body text-(length:--text-step-lead) leading-[1.5] text-ink"
+              >
                 No albums have been published yet. Photographs from fieldwork,
                 gauging stations and workshops across the basin will appear here as
                 they are catalogued.

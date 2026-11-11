@@ -34,16 +34,16 @@ function CommentShell({
   return (
     <article>
       <header className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h4 className="font-head text-[19px] font-medium leading-none text-ink">
+        <h4 className="font-head text-[1.375rem] leading-none text-ink">
           {displayName(authorName)}
         </h4>
-        <span aria-hidden className="text-indigo">
+        <span aria-hidden className="text-muted">
           ·
         </span>
         <time
           dateTime={createdAt}
           suppressHydrationWarning
-          className="font-body text-[13px] text-ink/55"
+          className="font-body text-[0.9375rem] text-muted"
         >
           {relativeDate(createdAt)}
         </time>
@@ -52,7 +52,7 @@ function CommentShell({
 
       {/* Plain text, always. Comment bodies are never parsed as markdown or
           HTML — `whitespace-pre-wrap` is the entire formatting model. */}
-      <p className="mt-3 whitespace-pre-wrap break-words font-body text-[16px] leading-[1.7] text-ink/85">
+      <p className="mt-3 whitespace-pre-wrap break-words font-body leading-[1.7] text-ink">
         {body}
       </p>
 
@@ -66,18 +66,18 @@ function CommentShell({
 
 export function AwaitingComment({ comment }: { comment: LocalComment }) {
   return (
-    <div className="border-2 border-dashed border-indigo/45 bg-soft p-5">
+    <div className="bg-sky p-5">
       <CommentShell
         authorName={comment.authorName}
         createdAt={comment.createdAt}
         body={comment.body}
         badge={
-          <span className="border-2 border-indigo px-2 py-1 font-body text-[10px] font-bold uppercase leading-none tracking-[0.14em] text-indigo">
+          <span className="bg-ink px-2.5 py-1.5 font-body text-[0.9375rem] font-medium leading-none text-paper">
             Awaiting review
           </span>
         }
       />
-      <p className="mt-4 font-body text-[13px] leading-snug text-ink/60">
+      <p className="mt-4 font-body text-[0.9375rem] leading-snug text-ink">
         Only you can see this. It goes public once Romeo has read it.
       </p>
     </div>
@@ -100,7 +100,7 @@ export function CommentItem({
   const [replying, setReplying] = useState(false)
 
   return (
-    <li className="rule pt-s20 first:border-t-0 first:pt-0">
+    <li>
       <CommentShell
         authorName={comment.authorName}
         createdAt={comment.createdAt}
@@ -118,7 +118,7 @@ export function CommentItem({
               type="button"
               onClick={() => setReplying((open) => !open)}
               aria-expanded={replying}
-              className="font-body text-sm font-bold text-indigo underline underline-offset-4 transition-colors duration-150 hover:text-ember"
+              className="arrow-link font-body text-[0.9375rem] text-ink"
             >
               {replying ? 'Cancel reply' : 'Reply'}
             </button>
@@ -142,7 +142,7 @@ export function CommentItem({
         ) : null}
 
         {comment.replies.length > 0 || pendingReplies.length > 0 ? (
-          <ul className="mt-6 space-y-6 border-l-2 border-indigo/25 pl-5 sm:pl-7">
+          <ul className="mt-6 space-y-6 bg-mist p-5 sm:ml-7 sm:p-7">
             {comment.replies.map((reply) => (
               <li key={reply.id}>
                 <CommentShell

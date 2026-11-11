@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import type { ReactNode } from 'react'
 import type {
   Award,
   Certification,
@@ -17,7 +18,7 @@ import {
 } from '@/content'
 
 import { siteImages } from '@/lib/images'
-import { Btn, BtnRow, Chip, Eyebrow, Section, Wide } from '@/components/site/primitives'
+import { Btn, BtnRow, Section, Wide } from '@/components/site/primitives'
 import { Reveal } from '@/components/site/reveal'
 import { PageHero } from '@/components/site/page-hero'
 
@@ -32,22 +33,37 @@ const CERTIFICATION_ENTRIES: readonly Certification[] = CERTIFICATIONS
 const MEMBERSHIP_ENTRIES: readonly Membership[] = MEMBERSHIPS
 const SKILL_GROUPS: readonly SkillGroup[] = SKILLS
 
-const ACCENT = 'var(--color-ember)'
-
-/** One token colour per skill group, cycled — matches the site's colour blocking. */
-const SKILL_ACCENTS = [
-  '#0b472c',
-  '#a4400a',
-  '#4458be',
-  '#c14300',
-  '#158753',
-  '#0b472c',
-]
-
 /** Certification years, newest first. Handles spans such as "2024–25". */
 const CERT_YEARS = Array.from(new Set(CERTIFICATIONS.map((c) => c.year))).sort(
   (a, b) => b.localeCompare(a),
 )
+
+/** A tag set on paper, for use on mist fields where the shared (mist) Chip would vanish. */
+function Tag({ children }: { children: ReactNode }) {
+  return (
+    <span className="inline-block bg-paper px-3 py-1.5 font-body text-[0.9375rem] font-medium leading-none text-ink">
+      {children}
+    </span>
+  )
+}
+
+/** Section opening: a short heading, then its sentence at lead size. */
+function SectionIntro({ title, children }: { title: ReactNode; children: ReactNode }) {
+  return (
+    <>
+      <h2 data-rise className="max-w-4xl text-ink">
+        {title}
+      </h2>
+      <p
+        data-rise
+        style={{ '--i': 1 } as React.CSSProperties}
+        className="mt-6 max-w-[48ch] text-(length:--text-step-lead) leading-[1.4] text-ink"
+      >
+        {children}
+      </p>
+    </>
+  )
+}
 
 export const metadata: Metadata = {
   title: 'About',
@@ -61,50 +77,52 @@ export default function AboutPage() {
 
   return (
     <>
-      <PageHero
-        eyebrow="About"
-        title={PROFILE.name}
-        lede={PROFILE.title}
-        accent={ACCENT}
-      />
+      <PageHero title={PROFILE.name} lede={PROFILE.title} />
 
       {/* ============================== BIO ============================== */}
       <Section>
         <Wide>
           {portrait ? (
             <div className="grid items-start gap-s30 lg:grid-cols-[1fr_340px]">
-              <Reveal>
-                <p className="max-w-(--container-measure) font-body text-(length:--text-fluid-md) leading-normal text-ink/80">
-                  {PROFILE.bio[0]}
-                </p>
-              </Reveal>
-              <Reveal delay={0.06}>
-                <div className="relative aspect-2/3 w-full">
-                  <Image
-                    src={portrait}
-                    alt={PROFILE.name}
-                    fill
-                    sizes="(min-width: 1024px) 340px, 100vw"
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              </Reveal>
-            </div>
-          ) : (
-            <Reveal>
-              <p className="max-w-(--container-measure) font-body text-(length:--text-fluid-md) leading-normal text-ink/80">
+              <p
+                data-rise
+                className="max-w-(--container-measure) font-body text-(length:--text-step-lead) leading-normal text-ink"
+              >
                 {PROFILE.bio[0]}
               </p>
-            </Reveal>
+              <div
+                data-rise
+                style={{ '--i': 1 } as React.CSSProperties}
+                className="relative aspect-2/3 w-full"
+              >
+                <Image
+                  src={portrait}
+                  alt={PROFILE.name}
+                  fill
+                  sizes="(min-width: 1024px) 340px, 100vw"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </div>
+          ) : (
+            <p
+              data-rise
+              className="max-w-(--container-measure) font-body text-(length:--text-step-lead) leading-normal text-ink"
+            >
+              {PROFILE.bio[0]}
+            </p>
           )}
 
           {PROFILE.bio.slice(1).map((para, i) => (
-            <Reveal key={i} delay={0.06 * (i + 1)}>
-              <p className="mt-7 max-w-(--container-measure) font-body text-(length:--text-fluid-md) leading-normal text-ink/80">
-                {para}
-              </p>
-            </Reveal>
+            <p
+              key={i}
+              data-rise
+              style={{ '--i': i + 1 } as React.CSSProperties}
+              className="mt-7 max-w-(--container-measure) font-body text-(length:--text-step-lead) leading-normal text-ink"
+            >
+              {para}
+            </p>
           ))}
         </Wide>
       </Section>
@@ -112,33 +130,26 @@ export default function AboutPage() {
       {/* ============================ EDUCATION ========================== */}
       <Section tone="soft" id="education">
         <Wide>
-          <Reveal>
-            <Eyebrow style={{ color: ACCENT }}>Education</Eyebrow>
-          </Reveal>
-          <Reveal delay={0.06}>
-            <h2 className="mt-4 max-w-2xl text-ink">
-              Environmental engineering, then the diplomacy that surrounds it.
-            </h2>
-          </Reveal>
+          <SectionIntro title="Education">
+            Environmental engineering, then the diplomacy that surrounds it.
+          </SectionIntro>
 
-          <ul className="mt-s40 max-w-(--container-measure)">
+          <ul className="mt-s40 max-w-(--container-measure) space-y-s30">
             {EDUCATION_ENTRIES.map((e, i) => (
               <Reveal key={e.id} delay={0.06 * i}>
-                <li className="rule py-7 first:border-t-0 first:pt-0">
+                <li>
                   <h3 className="text-ink">{e.degree}</h3>
-                  <p className="mt-3 font-body text-sm text-ink/70">
+                  <p className="mt-3 font-body text-ink">
                     {e.institution} · {e.location}
                   </p>
-                  <p className="mt-1 font-body text-sm tabular-nums text-ink/55">
-                    {e.period}
-                  </p>
+                  <p className="mt-1 font-body tabular-nums text-muted">{e.period}</p>
                   {e.award ? (
                     <p className="mt-4">
-                      <Chip accent={ACCENT}>{e.award}</Chip>
+                      <Tag>{e.award}</Tag>
                     </p>
                   ) : null}
                   {e.thesis ? (
-                    <p className="mt-4 font-body text-sm italic leading-relaxed text-ink/75">
+                    <p className="mt-4 font-body italic leading-relaxed text-muted">
                       {e.thesis}
                     </p>
                   ) : null}
@@ -152,35 +163,22 @@ export default function AboutPage() {
       {/* ============================= AWARDS ============================ */}
       <Section id="awards">
         <Wide>
-          <Reveal>
-            <Eyebrow style={{ color: 'var(--color-rust)' }}>
-              Awards &amp; fellowships
-            </Eyebrow>
-          </Reveal>
-          <Reveal delay={0.06}>
-            <h2 className="mt-4 max-w-2xl text-rust">
-              Selection, scholarship and recognition.
-            </h2>
-          </Reveal>
+          <SectionIntro title={<>Awards &amp; fellowships</>}>
+            Selection, scholarship and recognition.
+          </SectionIntro>
 
-          <ul className="mt-s40 max-w-(--container-measure)">
+          <ul className="mt-s40 max-w-(--container-measure) space-y-8">
             {AWARD_ENTRIES.map((a, i) => (
               <Reveal key={a.id} delay={0.04 * i}>
-                <li className="rule grid gap-2 py-6 first:border-t-0 first:pt-0 sm:grid-cols-[5rem_1fr] sm:gap-6">
-                  <span className="font-head text-lg leading-none tabular-nums text-rust">
+                <li className="grid gap-2 sm:grid-cols-[5rem_1fr] sm:gap-6">
+                  <span className="font-head text-[1.375rem] leading-none tabular-nums text-ink">
                     {a.year}
                   </span>
                   <div>
-                    <p className="font-body text-base font-semibold leading-snug text-ink">
-                      {a.title}
-                    </p>
-                    {a.org ? (
-                      <p className="mt-1 font-body text-sm text-ink/65">{a.org}</p>
-                    ) : null}
+                    <p className="font-body font-semibold leading-snug text-ink">{a.title}</p>
+                    {a.org ? <p className="mt-1 font-body text-muted">{a.org}</p> : null}
                     {a.detail ? (
-                      <p className="mt-2 font-body text-sm leading-relaxed text-ink/60">
-                        {a.detail}
-                      </p>
+                      <p className="mt-2 font-body leading-relaxed text-ink">{a.detail}</p>
                     ) : null}
                   </div>
                 </li>
@@ -193,34 +191,25 @@ export default function AboutPage() {
       {/* ========================= CERTIFICATIONS ======================== */}
       <Section tone="soft" id="certifications">
         <Wide>
-          <Reveal>
-            <Eyebrow style={{ color: 'var(--color-indigo)' }}>
-              Certifications &amp; professional training
-            </Eyebrow>
-          </Reveal>
-          <Reveal delay={0.06}>
-            <h2 className="mt-4 max-w-2xl text-indigo">
-              Modelling, safety, facilitation and policy, kept current.
-            </h2>
-          </Reveal>
+          <SectionIntro title={<>Certifications &amp; training</>}>
+            Modelling, safety, facilitation and policy, kept current.
+          </SectionIntro>
 
-          <div className="mt-s40 max-w-(--container-measure)">
+          <div className="mt-s40 max-w-(--container-measure) space-y-s30">
             {CERT_YEARS.map((year, i) => (
               <Reveal key={year} delay={0.05 * i}>
-                <div className="rule grid gap-3 py-6 first:border-t-0 first:pt-0 sm:grid-cols-[5rem_1fr] sm:gap-6">
-                  <span className="font-head text-lg leading-none tabular-nums text-indigo">
+                <div className="grid gap-3 sm:grid-cols-[5rem_1fr] sm:gap-6">
+                  <span className="font-head text-[1.375rem] leading-none tabular-nums text-ink">
                     {year}
                   </span>
                   <ul className="space-y-4">
                     {CERTIFICATION_ENTRIES.filter((c) => c.year === year).map((c) => (
                       <li key={c.id}>
-                        <p className="font-body text-sm font-semibold leading-snug text-ink">
+                        <p className="font-body font-semibold leading-snug text-ink">
                           {c.title}
                         </p>
                         {c.issuer ? (
-                          <p className="mt-1 font-body text-sm text-ink/60">
-                            {c.issuer}
-                          </p>
+                          <p className="mt-1 font-body text-muted">{c.issuer}</p>
                         ) : null}
                       </li>
                     ))}
@@ -235,30 +224,19 @@ export default function AboutPage() {
       {/* ========================== MEMBERSHIPS ========================== */}
       <Section id="memberships">
         <Wide>
-          <Reveal>
-            <Eyebrow style={{ color: 'var(--color-forest)' }}>
-              Professional memberships &amp; licensure
-            </Eyebrow>
-          </Reveal>
-          <Reveal delay={0.06}>
-            <h2 className="mt-4 max-w-2xl text-forest">
-              Registered practice, and the networks behind it.
-            </h2>
-          </Reveal>
+          <SectionIntro title={<>Memberships &amp; licensure</>}>
+            Registered practice, and the networks behind it.
+          </SectionIntro>
 
           <ul className="mt-s40 grid gap-6 sm:grid-cols-2">
             {MEMBERSHIP_ENTRIES.map((m, i) => (
               <Reveal key={m.id} delay={0.05 * i}>
-                <li className="h-full border-2 border-forest/25 bg-paper p-6">
-                  <p className="font-head text-xl leading-none text-forest">
-                    {m.role}
-                  </p>
-                  <p className="mt-3 font-body text-sm leading-relaxed text-ink/75">
-                    {m.org}
-                  </p>
+                <li className="h-full bg-mist p-7">
+                  <p className="font-head text-[1.375rem] leading-none text-ink sm:text-[1.625rem]">{m.role}</p>
+                  <p className="mt-3 font-body leading-relaxed text-ink">{m.org}</p>
                   {m.credential ? (
                     <p className="mt-4">
-                      <Chip accent="var(--color-forest)">{m.credential}</Chip>
+                      <Tag>{m.credential}</Tag>
                     </p>
                   ) : null}
                 </li>
@@ -271,57 +249,43 @@ export default function AboutPage() {
       {/* ============================= SKILLS ============================ */}
       <Section tone="soft" id="skills">
         <Wide>
-          <Reveal>
-            <Eyebrow style={{ color: 'var(--color-emerald)' }}>
-              Technical skills
-            </Eyebrow>
-          </Reveal>
-          <Reveal delay={0.06}>
-            <h2 className="mt-4 max-w-2xl text-emerald">
-              The toolkit, from earth observation to production software.
-            </h2>
-          </Reveal>
+          <SectionIntro title="Technical skills">
+            The toolkit, from earth observation to production software.
+          </SectionIntro>
 
-          <div className="mt-s40 grid gap-s30 md:grid-cols-2">
-            {SKILL_GROUPS.map((group, i) => {
-              const accent = SKILL_ACCENTS[i % SKILL_ACCENTS.length]
-              return (
-                <Reveal key={group.id} delay={0.05 * i}>
-                  <div className="border-t-2 pt-6" style={{ borderColor: accent }}>
-                    <h3 className="leading-tight" style={{ color: accent }}>
-                      {group.title}
-                    </h3>
-                    <ul className="mt-5 flex flex-wrap gap-2">
-                      {group.items.map((item) => (
-                        <li key={item}>
-                          <Chip accent={accent}>{item}</Chip>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </Reveal>
-              )
-            })}
+          <div className="mt-s40 grid gap-x-s30 gap-y-20 md:grid-cols-2">
+            {SKILL_GROUPS.map((group, i) => (
+              <Reveal key={group.id} delay={0.05 * i}>
+                <div>
+                  <h3 className="leading-tight text-ink">{group.title}</h3>
+                  <ul className="mt-5 flex flex-wrap gap-2">
+                    {group.items.map((item) => (
+                      <li key={item}>
+                        <Tag>{item}</Tag>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            ))}
           </div>
         </Wide>
       </Section>
 
       {/* ============================== CTA ============================== */}
-      <Section tone="forest" className="text-center">
+      <Section tone="ink" className="text-center">
         <Wide>
-          <Reveal>
-            <h2 className="mx-auto max-w-3xl text-soft">
-              The record is here. The next question is yours.
-            </h2>
-          </Reveal>
-          <Reveal delay={0.06}>
+          <h2 data-rise className="mx-auto max-w-4xl text-paper">
+            The record is here. The next question is yours.
+          </h2>
+          <div data-rise style={{ '--i': 1 } as React.CSSProperties}>
             <BtnRow align="center" className="mt-9">
               <Btn href="/contact">Get in touch</Btn>
-              <Btn href="/publications" variant="outline" accent="var(--color-soft)">
+              <Btn href="/publications" variant="outline" accent="var(--color-paper)">
                 Read the publications
               </Btn>
             </BtnRow>
-          </Reveal>
+          </div>
         </Wide>
       </Section>
     </>

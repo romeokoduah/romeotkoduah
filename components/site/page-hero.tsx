@@ -1,48 +1,75 @@
+import Image from 'next/image'
 import type { ReactNode } from 'react'
+import type { PagePhoto } from '@/content/photos'
 import { Wide } from './primitives'
-import { Reveal } from './reveal'
 
 /**
- * Standard interior-page header: soft paper band, accent eyebrow, oversized
- * Oswald title at line-height 1, lede constrained to the 740px text measure.
+ * Interior-page opening: a whole field of sky, the title large on the shared
+ * left edge, the lede at lead size beneath it, and optionally one photograph
+ * standing in the right-hand columns down to the field's lower edge.
+ *
+ * `eyebrow` and `accent` are kept for call-site compatibility but are no
+ * longer drawn; fold real information into the lede instead.
  */
 export function PageHero({
-  eyebrow,
   title,
   lede,
-  accent,
+  photo,
   children,
 }: {
-  eyebrow: string
+  eyebrow?: string
   title: string
   lede?: string
-  accent: string
+  accent?: string
+  photo?: PagePhoto
   children?: ReactNode
 }) {
   return (
-    <div className="border-b-2 bg-soft py-s50" style={{ borderColor: accent }}>
-      <Wide>
-        <Reveal immediate>
-          <p
-            className="font-body text-xs font-bold uppercase tracking-[0.18em]"
-            style={{ color: accent }}
+    <div className="bg-sky">
+      <Wide className={photo ? 'grid gap-10 pt-s40 lg:grid-cols-12 lg:gap-8' : 'pb-s50 pt-s40'}>
+        <div className={photo ? 'lg:col-span-7 lg:pb-s50' : undefined}>
+          <h1
+            data-rise
+            className="max-w-[18ch] text-[clamp(3rem,1.6rem+5.4vw,7rem)] leading-[0.9] text-ink"
           >
-            {eyebrow}
-          </p>
-        </Reveal>
-        <Reveal immediate delay={0.06}>
-          <h1 className="mt-4 max-w-4xl" style={{ color: accent }}>
             {title}
           </h1>
-        </Reveal>
-        {lede ? (
-          <Reveal immediate delay={0.12}>
-            <p className="mt-6 max-w-(--container-measure) font-body text-(length:--text-fluid-md) leading-normal text-ink/80">
+          {lede ? (
+            <p
+              data-rise
+              style={{ '--i': 1 } as React.CSSProperties}
+              className="mt-8 max-w-[60ch] text-(length:--text-step-lead) leading-[1.4] text-ink"
+            >
               {lede}
             </p>
-          </Reveal>
+          ) : null}
+          {children ? (
+            <div data-rise style={{ '--i': 2 } as React.CSSProperties} className="mt-8">
+              {children}
+            </div>
+          ) : null}
+        </div>
+
+        {photo ? (
+          <figure data-rise style={{ '--i': 2 } as React.CSSProperties} className="lg:col-span-5 lg:self-end">
+            <div className="relative aspect-4/3 w-full overflow-hidden lg:aspect-4/5">
+              <Image
+                src={photo.src}
+                alt={photo.alt}
+                fill
+                priority
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                className="object-cover"
+                style={{ objectPosition: photo.position ?? 'center' }}
+              />
+            </div>
+            {photo.credit ? (
+              <figcaption className="bg-sky py-3 text-[0.9375rem] text-ink">{photo.credit}</figcaption>
+            ) : (
+              <div className="h-0" />
+            )}
+          </figure>
         ) : null}
-        {children ? <Reveal immediate delay={0.18}>{children}</Reveal> : null}
       </Wide>
     </div>
   )

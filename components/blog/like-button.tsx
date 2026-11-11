@@ -79,12 +79,12 @@ export function LikeButton({
         onClick={onClick}
         aria-pressed={state.liked}
         className={cn(
-          'inline-flex items-center justify-center gap-2 border-2 border-indigo font-body text-sm font-bold leading-none transition-colors duration-150',
+          'inline-flex items-center justify-center gap-2 border-2 border-ink font-body text-[0.9375rem] font-medium leading-none transition-colors duration-150',
           layout === 'stack' ? 'flex-col gap-1.5 px-3 py-3' : 'px-4 py-2.5',
           state.liked
-            ? 'bg-indigo text-paper'
-            : 'bg-transparent text-indigo hover:bg-indigo hover:text-paper',
-          busy && 'opacity-70',
+            ? 'bg-ink text-paper'
+            : 'bg-transparent text-ink hover:bg-ink hover:text-paper',
+          busy && 'cursor-wait',
         )}
       >
         <HeartIcon filled={state.liked} />
@@ -98,7 +98,7 @@ export function LikeButton({
         <p
           role="status"
           className={cn(
-            'font-body text-[13px] leading-snug text-ember',
+            'font-body text-[0.9375rem] leading-snug text-ink',
             layout === 'stack' ? 'mt-2 max-w-[8rem] text-center' : 'mt-2',
           )}
         >

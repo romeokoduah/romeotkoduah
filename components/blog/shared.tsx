@@ -1,16 +1,13 @@
 import type { Comment } from '@/lib/blog-types'
 
 /**
- * Small pieces shared across the blog components. The accent is the indigo
- * from the design tokens — the blog sits in the "AI & Digital Systems" colour
- * so that Writing reads as one practice rather than a bolted-on section.
- *
- * The literal is kept alongside the custom property because a handful of
- * props (PageHero's `accent`, Chip's `accent`) take a colour string rather
- * than a class, and `var(--color-indigo)` is not valid everywhere a string is.
+ * Small pieces shared across the blog components. `ACCENT` and `ACCENT_HEX`
+ * are kept as exports for callers that still pass a colour string; both now
+ * resolve to the ink role. Do not pass them to a solid `Btn`: the primary
+ * button keeps the orange action colour.
  */
-export const ACCENT = 'var(--color-indigo)'
-export const ACCENT_HEX = '#4458be'
+export const ACCENT = 'var(--color-ink)'
+export const ACCENT_HEX = '#0e1822'
 
 /** Total approved comments in a two-level tree, replies included. */
 export function countComments(comments: Comment[]): number {

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { PRACTICE_BY_KEY } from '@/content'
 import type { Project } from '@/content/types'
 import { logoFor, projectImages } from '@/lib/images'
-import { cn } from '@/lib/utils'
+import { cn, splitTitle } from '@/lib/utils'
 
 const STOPWORDS = new Set([
   'of',
@@ -56,84 +56,48 @@ function inverted(slug: string): boolean {
   return h % 2 === 1
 }
 
-/**
- * Institution mark, shown when a logo for the project's organisation is
- * available. Sits on paper rather than the accent fill — most logos are
- * multi-colour and need a light ground — with the practice accent kept as a
- * rule along the bottom so the colour coding survives.
- */
-function LogoTile({
-  logo,
-  project,
-  accent,
-}: {
-  logo: string
-  project: Project
-  accent: string
-}) {
+/** Institution mark on a mist field: most logos are multi-colour and need a light ground. */
+function LogoTile({ logo, project }: { logo: string; project: Project }) {
   return (
-    <div
-      className="relative flex aspect-16/10 w-full items-center justify-center bg-white px-7 py-6"
-      style={{ borderBottom: `2px solid ${accent}` }}
-    >
-      {/* Marks vary from ~5:1 wordmarks (GWP) to ~1:2 portrait emblems (UNDP),
-          so cap both axes and let object-contain settle each one. */}
+    <div className="flex h-full w-full items-center justify-center bg-mist px-6 py-5">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={logo}
         alt={`${project.org} logo`}
         loading="lazy"
         decoding="async"
-        className="max-h-[84px] max-w-[76%] object-contain"
+        className="max-h-[72px] max-w-[74%] object-contain"
       />
-      <span
-        className="absolute bottom-3 right-4 font-body text-[10px] font-bold uppercase tracking-[0.16em] text-ink/35"
-        aria-hidden
-      >
-        {project.period}
+    </div>
+  )
+}
+
+/** Typographic tile for projects with neither photograph nor logo. */
+function FallbackTile({ project }: { project: Project }) {
+  const invert = inverted(project.slug)
+  const mark = initials(project.org)
+  const size =
+    mark.length <= 3 ? 'text-[3.25rem]' : mark.length === 4 ? 'text-[2.75rem]' : 'text-[2.125rem]'
+
+  return (
+    <div
+      className={cn(
+        'flex h-full w-full items-center justify-center',
+        invert ? 'bg-sky text-ink' : 'bg-ink text-sky',
+      )}
+      aria-hidden
+    >
+      <span className={cn('select-none font-head font-bold leading-none tracking-[-0.02em]', size)}>
+        {mark}
       </span>
     </div>
   )
 }
 
 /**
- * Typographic tile shown until a `cover.jpg` is dropped into
- * public/images/projects/<slug>/. Keeps the grid looking finished from day one.
+ * One entry in a project index: a picture on the left, the words on the
+ * right, separated from its neighbours by space rather than a box.
  */
-function FallbackTile({ project, accent }: { project: Project; accent: string }) {
-  const invert = inverted(project.slug)
-  const mark = initials(project.org)
-
-  // Long monograms need to step down so they never clip the tile.
-  const size =
-    mark.length <= 3 ? 'text-[3.5rem]' : mark.length === 4 ? 'text-[3rem]' : 'text-[2.25rem]'
-
-  return (
-    <div
-      className="relative flex aspect-16/10 w-full items-center justify-center overflow-hidden"
-      style={
-        invert
-          ? { backgroundColor: 'var(--color-soft)', borderBottom: `2px solid ${accent}` }
-          : { backgroundColor: accent }
-      }
-      aria-hidden
-    >
-      <span
-        className={cn('select-none font-head leading-none tracking-tight', size)}
-        style={{ color: invert ? accent : 'rgba(255,255,255,0.92)' }}
-      >
-        {mark}
-      </span>
-      <span
-        className="absolute bottom-3 right-4 font-body text-[10px] font-bold uppercase tracking-[0.16em]"
-        style={{ color: invert ? `${accent}99` : 'rgba(255,255,255,0.55)' }}
-      >
-        {project.period}
-      </span>
-    </div>
-  )
-}
-
 export function ProjectCard({
   project,
   className,
@@ -145,59 +109,44 @@ export function ProjectCard({
 }) {
   const practice = PRACTICE_BY_KEY[project.practice]
   const { cover } = projectImages(project.slug)
-  // Photographs win over logos; logos win over the monogram.
   const logo = cover ? null : logoFor(project.slug)
+  const [name, expansion] = splitTitle(project.title)
 
   return (
     <Link
       href={`/work/${project.slug}`}
-      className={cn(
-        'group flex flex-col border-2 bg-paper transition-colors duration-150',
-        className,
-      )}
-      style={{ borderColor: practice.accent }}
+      className={cn('group grid gap-5 sm:grid-cols-[200px_1fr] sm:gap-7', className)}
     >
-      {cover ? (
-        <div className="relative aspect-16/10 w-full overflow-hidden">
+      <div className="relative aspect-16/9 w-full self-start overflow-hidden sm:aspect-4/3">
+        {cover ? (
           <Image
             src={cover}
             alt=""
             fill
-            sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
-            className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-[1.03]"
+            sizes="(min-width: 640px) 200px, 100vw"
+            className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
             priority={priority}
           />
-        </div>
-      ) : logo ? (
-        <LogoTile logo={logo} project={project} accent={practice.accent} />
-      ) : (
-        <FallbackTile project={project} accent={practice.accent} />
-      )}
+        ) : logo ? (
+          <LogoTile logo={logo} project={project} />
+        ) : (
+          <FallbackTile project={project} />
+        )}
+      </div>
 
-      <div className="flex flex-1 flex-col p-5">
-        <p
-          className="font-body text-[11px] font-bold uppercase tracking-[0.16em]"
-          style={{ color: practice.accent }}
-        >
-          {practice.short}
+      <div>
+        <h3 className="font-head text-[clamp(1.375rem,1.2rem+0.4vw,1.625rem)] leading-[1.02] tracking-[-0.01em] transition-colors duration-150 group-hover:text-muted">
+          {name}
+        </h3>
+        {expansion ? (
+          <p className="mt-1.5 text-[1.0625rem] font-medium leading-snug text-ink">{expansion}</p>
+        ) : null}
+        <p className="mt-2 text-[0.9375rem] text-muted">
+          {practice.short} · {project.org.split(/ [—–] /)[0]} · {project.period}
         </p>
-
-        <h3 className="mt-2 font-head leading-[1.15]">{project.title}</h3>
-
-        <p className="mt-2 font-body text-[13px] font-semibold text-ink/55">
-          {project.org} · {project.period}
-        </p>
-
-        <p className="mt-3 font-body text-sm leading-relaxed text-ink/80">
+        <p className="mt-3 hidden max-w-[60ch] text-[1.0625rem] leading-[1.5] sm:block">
           {project.summary}
         </p>
-
-        <span
-          className="mt-5 inline-flex items-center gap-2 font-body text-sm font-bold transition-transform duration-150 group-hover:translate-x-1"
-          style={{ color: practice.accent }}
-        >
-          Read more <span aria-hidden>→</span>
-        </span>
       </div>
     </Link>
   )

@@ -95,7 +95,7 @@ export function CommentForm({
     <form
       onSubmit={handleSubmit}
       className={cn(
-        'relative border-2 border-ink/12 bg-paper',
+        'relative bg-mist',
         compact ? 'p-5' : 'p-6 sm:p-8',
       )}
     >
@@ -123,9 +123,9 @@ export function CommentForm({
         <div>
           <label
             htmlFor={nameId}
-            className="block font-body text-xs font-bold uppercase tracking-[0.16em] text-ink/60"
+            className="block font-body text-[1.0625rem] font-medium text-ink"
           >
-            Name <span className="font-normal normal-case tracking-normal">(optional)</span>
+            Name <span className="font-normal text-muted">(optional)</span>
           </label>
           <input
             id={nameId}
@@ -136,14 +136,14 @@ export function CommentForm({
             autoComplete="name"
             onChange={(e) => setName(e.target.value)}
             placeholder="Leave blank to post as Anonymous"
-            className="mt-2 w-full border-2 border-ink/15 bg-paper px-4 py-3 font-body text-[15px] leading-normal text-ink outline-none transition-colors duration-150 placeholder:text-ink/40 focus:border-indigo"
+            className="mt-2 w-full border-2 border-muted bg-paper px-4 py-3 font-body text-[1.0625rem] leading-normal text-ink outline-none transition-colors duration-150 placeholder:text-muted focus:border-ink"
           />
         </div>
 
         <div>
           <label
             htmlFor={bodyId}
-            className="block font-body text-xs font-bold uppercase tracking-[0.16em] text-ink/60"
+            className="block font-body text-[1.0625rem] font-medium text-ink"
           >
             {parentId ? 'Your reply' : 'Your comment'}
           </label>
@@ -157,13 +157,13 @@ export function CommentForm({
             aria-invalid={tooLong || undefined}
             onChange={(e) => setBody(e.target.value)}
             placeholder="Plain text — links are counted, markdown is not rendered."
-            className="mt-2 w-full resize-y border-2 border-ink/15 bg-paper px-4 py-3 font-body text-[15px] leading-[1.7] text-ink outline-none transition-colors duration-150 placeholder:text-ink/40 focus:border-indigo"
+            className="mt-2 w-full resize-y border-2 border-muted bg-paper px-4 py-3 font-body text-[1.0625rem] leading-[1.7] text-ink outline-none transition-colors duration-150 placeholder:text-muted focus:border-ink"
           />
           <p
             id={countId}
             className={cn(
-              'mt-2 text-right font-body text-[13px] tabular-nums',
-              tooLong ? 'font-bold text-ember' : 'text-ink/50',
+              'mt-2 text-right font-body text-[0.9375rem] tabular-nums',
+              tooLong ? 'font-bold text-ink' : 'text-muted',
             )}
           >
             {tooLong
@@ -176,7 +176,7 @@ export function CommentForm({
       {error ? (
         <p
           role="status"
-          className="mt-1 border-l-4 border-ember bg-soft px-4 py-3 font-body text-[14px] leading-snug text-ember"
+          className="mt-1 bg-sky px-4 py-3 font-body font-medium leading-snug text-ink"
         >
           {error}
         </p>
@@ -186,8 +186,7 @@ export function CommentForm({
         <button
           type="submit"
           disabled={busy || tooShort || tooLong}
-          className="btn disabled:cursor-not-allowed disabled:opacity-45"
-          style={{ backgroundColor: 'var(--color-indigo)' }}
+          className="btn disabled:cursor-not-allowed disabled:border-muted disabled:bg-paper disabled:text-muted"
         >
           <span>{busy ? 'Posting…' : parentId ? 'Post reply' : 'Post comment'}</span>
         </button>
@@ -196,13 +195,13 @@ export function CommentForm({
           <button
             type="button"
             onClick={onCancel}
-            className="font-body text-sm font-bold text-ink/60 underline underline-offset-4 transition-colors duration-150 hover:text-ink"
+            className="arrow-link font-body text-[0.9375rem] text-ink"
           >
             Cancel
           </button>
         ) : null}
 
-        <p className="font-body text-[13px] leading-snug text-ink/55">
+        <p className="font-body text-[0.9375rem] leading-snug text-muted">
           Comments are read before they appear.
         </p>
       </div>

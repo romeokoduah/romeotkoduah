@@ -13,7 +13,7 @@ export function Section({
   children,
   ...rest
 }: ComponentProps<'section'> & {
-  tone?: 'paper' | 'soft' | 'ink' | 'forest'
+  tone?: 'paper' | 'soft' | 'ink' | 'forest' | 'sky'
   tall?: boolean
 }) {
   return (
@@ -21,8 +21,9 @@ export function Section({
       className={cn(
         tall ? 'py-s70' : 'py-s60',
         tone === 'soft' && 'bg-soft',
-        tone === 'ink' && 'bg-ink text-soft',
-        tone === 'forest' && 'bg-forest text-soft',
+        tone === 'ink' && 'bg-ink text-paper',
+        tone === 'forest' && 'bg-ink text-paper',
+        tone === 'sky' && 'bg-sky text-ink',
         className,
       )}
       {...rest}
@@ -56,7 +57,7 @@ export function Eyebrow({
   return (
     <p
       className={cn(
-        'font-body text-xs font-bold uppercase tracking-[0.18em] opacity-70',
+        'font-body text-(length:--text-step-body) font-medium text-muted',
         className,
       )}
       style={style}
@@ -169,8 +170,8 @@ export function BtnRow({
 export function Chip({ children, accent }: { children: ReactNode; accent?: string }) {
   return (
     <span
-      className="border-2 px-3 py-1 font-body text-xs font-semibold leading-none"
-      style={{ borderColor: accent ?? 'currentColor', color: accent ?? 'currentColor' }}
+      className="inline-block bg-mist px-3 py-1.5 font-body text-[0.9375rem] font-medium leading-none text-ink"
+      data-accent={accent}
     >
       {children}
     </span>

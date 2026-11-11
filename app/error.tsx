@@ -21,18 +21,15 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="bg-forest px-s30 py-s70 text-soft">
-      <div className="mx-auto max-w-(--container-measure)">
-        <p className="font-body text-xs font-bold uppercase tracking-[0.18em] text-periwinkle">
-          Something went wrong
-        </p>
-        <h1 className="mt-4 text-soft">This part of the site is not loading.</h1>
-        <p className="mt-6 font-body text-(length:--text-fluid-md) leading-normal text-soft/80">
-          It is most likely temporary. Try again in a moment — the rest of the site is
-          unaffected.
+    <div className="bg-sky px-s30 py-s70 text-ink">
+      <div className="mx-auto max-w-[56rem]">
+        <h1 className="text-ink">This part of the site is not loading.</h1>
+        <p className="mt-6 max-w-(--container-measure) font-body text-(length:--text-step-lead) leading-normal text-ink">
+          Something went wrong. It is most likely temporary: try again in a moment —
+          the rest of the site is unaffected.
         </p>
         {error.digest ? (
-          <p className="mt-4 font-body text-sm text-soft/50">
+          <p className="mt-4 font-body text-[0.9375rem] text-muted">
             Reference: <code>{error.digest}</code>
           </p>
         ) : null}
@@ -40,7 +37,7 @@ export default function Error({
           <button type="button" onClick={reset} className="btn">
             <span>Try again</span>
           </button>
-          <Link href="/" className="btn btn-outline" style={{ color: 'var(--color-soft)' }}>
+          <Link href="/" className="btn btn-outline">
             <span>Back to the homepage</span>
           </Link>
         </div>

@@ -12,11 +12,11 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 export function ProjectGallery({
   images,
   title,
-  accent,
 }: {
   images: readonly string[]
   title: string
-  accent: string
+  /** Kept for call-site compatibility; the palette is fixed. */
+  accent?: string
 }) {
   const [index, setIndex] = useState<number | null>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
@@ -82,14 +82,13 @@ export function ProjectGallery({
 
   return (
     <>
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {images.map((src, i) => (
           <li key={src}>
             <button
               type="button"
               onClick={() => setIndex(i)}
-              className="group relative block aspect-4/3 w-full overflow-hidden border-2 bg-soft"
-              style={{ borderColor: accent }}
+              className="group relative block aspect-4/3 w-full overflow-hidden bg-mist"
               aria-label={`Open image ${i + 1} of ${images.length}`}
             >
               <Image
@@ -115,10 +114,10 @@ export function ProjectGallery({
             exit={reduce ? undefined : { opacity: 0 }}
             transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             onClick={close}
-            className="fixed inset-0 z-[80] flex flex-col bg-ink/95 px-s20 py-s20"
+            className="fixed inset-0 z-[80] flex flex-col bg-ink px-s20 py-s20"
           >
             <div className="flex items-center justify-between gap-6">
-              <p className="font-body text-sm font-bold text-soft/70 tabular-nums">
+              <p className="font-body text-[0.9375rem] font-medium text-paper tabular-nums">
                 {index + 1} / {images.length}
               </p>
               <button
@@ -128,7 +127,7 @@ export function ProjectGallery({
                   event.stopPropagation()
                   close()
                 }}
-                className="border-2 border-soft px-4 py-2 font-body text-sm font-bold text-soft"
+                className="bg-paper px-5 py-2.5 font-body text-[0.9375rem] font-medium text-ink transition-colors duration-150 hover:bg-sky"
               >
                 Close
               </button>
@@ -156,7 +155,7 @@ export function ProjectGallery({
                     event.stopPropagation()
                     step(-1)
                   }}
-                  className="border-2 border-soft/60 px-4 py-2 font-body text-sm font-bold text-soft"
+                  className="bg-paper px-5 py-2.5 font-body text-[0.9375rem] font-medium text-ink transition-colors duration-150 hover:bg-sky"
                   aria-label="Previous image"
                 >
                   <span aria-hidden>←</span> Previous
@@ -167,7 +166,7 @@ export function ProjectGallery({
                     event.stopPropagation()
                     step(1)
                   }}
-                  className="border-2 border-soft/60 px-4 py-2 font-body text-sm font-bold text-soft"
+                  className="bg-paper px-5 py-2.5 font-body text-[0.9375rem] font-medium text-ink transition-colors duration-150 hover:bg-sky"
                   aria-label="Next image"
                 >
                   Next <span aria-hidden>→</span>

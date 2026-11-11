@@ -1,19 +1,11 @@
 import { Fragment } from 'react'
+import { PAGE_PHOTOS } from '@/content/photos'
 import type { Metadata } from 'next'
 import type { Publication } from '@/content'
 import { PUBLICATION_SECTIONS, publicationsByKind } from '@/content'
-import { Btn, BtnRow, Eyebrow, Section, Wide } from '@/components/site/primitives'
+import { Btn, BtnRow, Section, Wide } from '@/components/site/primitives'
 import { Reveal } from '@/components/site/reveal'
 import { PageHero } from '@/components/site/page-hero'
-
-const ACCENT = 'var(--color-forest)'
-
-/** One token colour per section, so the three kinds read apart at a glance. */
-const SECTION_ACCENTS: Record<string, string> = {
-  journal: '#0b472c',
-  'under-review': '#4458be',
-  report: '#a4400a',
-}
 
 /** Romeo's own name, exactly as it appears in every CV author string. */
 const SELF = 'Koduah, R. T.'
@@ -38,26 +30,24 @@ function Authors({ value }: { value: string }) {
   )
 }
 
-function Citation({ item, accent }: { item: Publication; accent: string }) {
+function Citation({ item }: { item: Publication }) {
   return (
-    <li className="rule py-7 first:border-t-0 first:pt-0">
+    <li>
       {item.authors ? (
-        <p className="font-body text-sm leading-relaxed text-ink/70">
+        <p className="font-body leading-relaxed text-muted">
           <Authors value={item.authors} />
           {item.year ? <span className="tabular-nums"> ({item.year}).</span> : null}
         </p>
       ) : item.year ? (
-        <p className="font-body text-sm font-bold tabular-nums" style={{ color: accent }}>
-          {item.year}
-        </p>
+        <p className="font-body font-bold tabular-nums text-muted">{item.year}</p>
       ) : null}
 
-      <p className="mt-2 font-body text-(length:--text-fluid-md) font-semibold leading-snug text-ink">
+      <p className="mt-2 font-body text-(length:--text-step-lead) font-semibold leading-snug text-ink">
         {item.title}
       </p>
 
       {item.venue || item.locator ? (
-        <p className="mt-2 font-body text-sm leading-relaxed text-ink/70">
+        <p className="mt-2 font-body leading-relaxed text-muted">
           {item.venue ? <em>{item.venue}</em> : null}
           {item.venue && item.locator ? ', ' : null}
           {item.locator ? <span className="tabular-nums">{item.locator}</span> : null}
@@ -65,10 +55,7 @@ function Citation({ item, accent }: { item: Publication; accent: string }) {
       ) : null}
 
       {item.note ? (
-        <p
-          className="mt-4 inline-block border-2 px-3 py-1 font-body text-xs font-semibold leading-none"
-          style={{ borderColor: accent, color: accent }}
-        >
+        <p className="mt-4 inline-block bg-sky px-3 py-1.5 font-body text-[0.9375rem] font-semibold leading-none text-ink">
           {item.note}
         </p>
       ) : null}
@@ -80,6 +67,10 @@ const COUNTS = PUBLICATION_SECTIONS.map((s) => publicationsByKind(s.kind).length
 
 const LEDE = `${COUNTS[0]} peer-reviewed journal articles, ${COUNTS[1]} manuscripts under review and ${COUNTS[2]} policy and technical reports — hydrology, water accounting, small hydropower, and the regulation and investment planning that follows from them.`
 
+function entryCount(n: number): string {
+  return n === 1 ? '1 entry.' : `${n} entries.`
+}
+
 export const metadata: Metadata = {
   title: 'Publications',
   description:
@@ -90,17 +81,11 @@ export const metadata: Metadata = {
 export default function PublicationsPage() {
   return (
     <>
-      <PageHero
-        eyebrow="Publications"
-        title="Journal articles, manuscripts and reports."
-        lede={LEDE}
-        accent={ACCENT}
-      />
+      <PageHero title="Publications" lede={LEDE} photo={PAGE_PHOTOS.publications} />
 
       {PUBLICATION_SECTIONS.map((section, i) => {
         const items = publicationsByKind(section.kind)
         if (items.length === 0) return null
-        const accent = SECTION_ACCENTS[section.kind] ?? ACCENT
 
         return (
           <Section
@@ -109,22 +94,21 @@ export default function PublicationsPage() {
             id={section.kind}
           >
             <Wide>
-              <Reveal>
-                <Eyebrow style={{ color: accent }}>
-                  {String(i + 1).padStart(2, '0')} ·{' '}
-                  {String(items.length).padStart(2, '0')} entries
-                </Eyebrow>
-              </Reveal>
-              <Reveal delay={0.06}>
-                <h2 className="mt-4 max-w-3xl" style={{ color: accent }}>
-                  {section.title}
-                </h2>
-              </Reveal>
+              <h2 data-rise className="max-w-4xl text-ink">
+                {section.title}
+              </h2>
+              <p
+                data-rise
+                style={{ '--i': 1 } as React.CSSProperties}
+                className="mt-5 text-(length:--text-step-lead) leading-[1.4] tabular-nums text-muted"
+              >
+                {entryCount(items.length)}
+              </p>
 
-              <ul className="mt-s40 max-w-(--container-measure)">
+              <ul className="mt-s40 max-w-(--container-measure) space-y-10">
                 {items.map((item, j) => (
                   <Reveal key={item.id} delay={0.05 * j}>
-                    <Citation item={item} accent={accent} />
+                    <Citation item={item} />
                   </Reveal>
                 ))}
               </ul>
@@ -133,21 +117,19 @@ export default function PublicationsPage() {
         )
       })}
 
-      <Section tone="forest" className="text-center">
+      <Section tone="ink" className="text-center">
         <Wide>
-          <Reveal>
-            <h2 className="mx-auto max-w-3xl text-soft">
-              Looking for a preprint, a dataset or a co-author?
-            </h2>
-          </Reveal>
-          <Reveal delay={0.06}>
+          <h2 data-rise className="mx-auto max-w-4xl text-paper">
+            Looking for a preprint, a dataset or a co-author?
+          </h2>
+          <div data-rise style={{ '--i': 1 } as React.CSSProperties}>
             <BtnRow align="center" className="mt-9">
               <Btn href="/contact">Get in touch</Btn>
-              <Btn href="/research" variant="outline" accent="var(--color-soft)">
+              <Btn href="/research" variant="outline" accent="var(--color-paper)">
                 The research behind them
               </Btn>
             </BtnRow>
-          </Reveal>
+          </div>
         </Wide>
       </Section>
     </>

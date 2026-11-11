@@ -1,19 +1,19 @@
 import type { Metadata, Viewport } from 'next'
-import { Oswald, Open_Sans } from 'next/font/google'
+import { Barlow, Barlow_Condensed } from 'next/font/google'
 import './globals.css'
 
-const oswald = Oswald({
+const barlowCondensed = Barlow_Condensed({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  variable: '--font-oswald',
+  weight: ['600', '700'],
+  variable: '--font-barlow-condensed',
   display: 'swap',
 })
 
-const openSans = Open_Sans({
+const barlow = Barlow({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['400', '500', '600'],
   style: ['normal', 'italic'],
-  variable: '--font-open-sans',
+  variable: '--font-barlow',
   display: 'swap',
 })
 
@@ -62,20 +62,20 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0b472c',
+  themeColor: '#6bb4ee',
   width: 'device-width',
   initialScale: 1,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${oswald.variable} ${openSans.variable}`}>
+    <html lang="en" className={`${barlowCondensed.variable} ${barlow.variable}`}>
       <head>
         {/* Belt and braces for the scroll reveals: `@media (scripting: none)`
             covers script-disabled browsers, this covers older ones that lack
             that query. Both target only `.reveal`, so nothing else is forced. */}
         <noscript>
-          <style>{`.reveal{opacity:1!important;filter:none!important;transform:none!important}`}</style>
+          <style>{`[data-rise],.reveal{opacity:1!important;filter:none!important;transform:none!important}`}</style>
         </noscript>
       </head>
       {/* The public masthead and footer live in app/(site)/layout.tsx, not

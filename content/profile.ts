@@ -45,7 +45,7 @@ export const PRACTICES = [
     label: 'Research & Hydrology',
     short: 'Research',
     href: '/research',
-    accent: '#0b472c',
+    accent: '#0e1822',
     blurb:
       'Continental and basin-scale hydrology built on earth observation, distributed modelling and machine learning — water budgets, discharge, environmental flows and hydropower potential.',
   },
@@ -54,7 +54,7 @@ export const PRACTICES = [
     label: 'Policy & Consulting',
     short: 'Consulting',
     href: '/consulting',
-    accent: '#a4400a',
+    accent: '#0e1822',
     blurb:
       'Turning technical evidence into instruments governments can adopt: regulation, carbon market design, investment plans and multi-partner research programmes.',
   },
@@ -63,7 +63,7 @@ export const PRACTICES = [
     label: 'AI & Digital Systems',
     short: 'Systems',
     href: '/systems',
-    accent: '#4458be',
+    accent: '#0e1822',
     blurb:
       'Full-stack platforms built to close the implementation, measurement and coordination gaps that the policy and research work exposes.',
   },
@@ -72,7 +72,7 @@ export const PRACTICES = [
     label: 'Communications & Knowledge Management',
     short: 'Communications',
     href: '/communications',
-    accent: '#c14300',
+    accent: '#0e1822',
     blurb:
       'Knowledge management for a World Bank Centre of Excellence, donor and institutional reporting, stakeholder convening and representation at national policy forums.',
   },
@@ -81,7 +81,7 @@ export const PRACTICES = [
     label: 'Training, Facilitation & Speaking',
     short: 'Speaking',
     href: '/speaking',
-    accent: '#158753',
+    accent: '#0e1822',
     blurb:
       'Certified facilitation on integrated water resources management, sub-regional webinar series, national youth climate convening, teaching and debate coaching.',
   },

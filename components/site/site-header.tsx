@@ -3,40 +3,25 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { cn } from '@/lib/utils'
 import { PRACTICES, PROFILE } from '@/content'
-import { SOCIAL_ICONS } from './icons'
 
+/** Five plain links and one action. Practices live under Work. */
 const NAV = [
-  { label: 'About', href: '/about' },
-  ...PRACTICES.map((p) => ({ label: p.short, href: p.href })),
+  { label: 'Work', href: '/work' },
   { label: 'Writing', href: '/blog' },
+  { label: 'Publications', href: '/publications' },
   { label: 'Gallery', href: '/gallery' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'About', href: '/about' },
 ]
 
-/** Short masthead strapline — PROFILE.title is the long-form version. */
-const STRAPLINE = 'Water · Energy · Climate — research, policy and systems'
-
-const SOCIALS = PROFILE.contact.filter((c) =>
-  ['Email', 'LinkedIn', 'GitHub'].includes(c.label),
-)
+const SOCIALS = PROFILE.contact.filter((c) => ['LinkedIn', 'GitHub'].includes(c.label))
 
 export function SiteHeader() {
   const pathname = usePathname()
-  const [condensed, setCondensed] = useState(false)
   const [open, setOpen] = useState(false)
-  const reduce = useReducedMotion()
+  const home = pathname === '/'
 
-  useEffect(() => {
-    const onScroll = () => setCondensed(window.scrollY > 220)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  // close the overlay on navigation and lock scroll while it is open
   useEffect(() => setOpen(false), [pathname])
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
@@ -46,177 +31,125 @@ export function SiteHeader() {
   }, [open])
 
   const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href)
+    href === '/work'
+      ? pathname.startsWith('/work') || PRACTICES.some((p) => pathname.startsWith(p.href))
+      : pathname.startsWith(href)
 
   return (
     <>
-      {/* ---- full masthead: centred, stacked, forest band ---- */}
-      <header className="bg-forest px-s30 py-s20 text-white">
-        <div className="mx-auto flex max-w-(--container-wide) flex-col items-center gap-2 text-center">
-          <Link href="/" className="group flex flex-col items-center gap-0.5">
-            <span className="font-head text-(length:--text-brand) font-medium leading-none tracking-normal">
-              Romeo Tweneboah Koduah
-            </span>
-            <span className="font-body text-[13px] font-semibold text-periwinkle/90 sm:text-sm">
-              {STRAPLINE}
-            </span>
+      <header
+        className={cn(
+          'z-40 w-full',
+          // On the homepage the giant pinned name is the wordmark, so the bar
+          // floats over the first screen and scrolls away with it.
+          home ? 'absolute inset-x-0 top-0' : 'sticky top-0 bg-paper',
+        )}
+      >
+        <div className="mx-auto flex h-[76px] max-w-(--container-wide) items-center justify-between gap-8 px-s30">
+          <Link
+            href="/"
+            className={cn(
+              'font-head text-[1.625rem] font-bold leading-none tracking-[-0.01em] text-ink transition-opacity duration-150 hover:opacity-75',
+              home && 'sr-only',
+            )}
+          >
+            {PROFILE.name}
           </Link>
 
-          {/* desktop nav */}
-          <nav
-            aria-label="Primary"
-            className="mt-2 hidden flex-wrap items-center justify-center gap-x-5 gap-y-1 lg:flex xl:gap-x-7"
-          >
+          <nav aria-label="Primary" className="ml-auto hidden items-center gap-8 lg:flex">
             {NAV.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 aria-current={isActive(item.href) ? 'page' : undefined}
                 className={cn(
-                  'font-body text-(length:--text-fluid-sm) font-semibold leading-[2] transition-colors duration-150 hover:text-periwinkle',
-                  isActive(item.href) && 'text-periwinkle underline underline-offset-[6px]',
+                  'relative py-2 font-body text-[1.0625rem] font-medium text-ink',
+                  'after:absolute after:inset-x-0 after:bottom-0 after:h-[3px] after:origin-left after:scale-x-0 after:bg-ink after:transition-transform after:duration-200',
+                  'hover:after:scale-x-100',
+                  isActive(item.href) && 'after:scale-x-100',
                 )}
               >
                 {item.label}
               </Link>
             ))}
+            <Link href="/contact" className="btn min-h-[44px] px-5">
+              <span>Contact</span>
+            </Link>
           </nav>
 
-          {/* socials */}
-          <div className="mt-2 hidden items-center gap-6 lg:flex">
-            {SOCIALS.map((s) => {
-              const Icon = SOCIAL_ICONS[s.label]
-              return (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target={s.href.startsWith('mailto:') ? undefined : '_blank'}
-                  rel="noopener noreferrer"
-                  title={s.label}
-                  className="text-white/75 transition-colors duration-150 hover:text-white"
-                >
-                  {Icon ? <Icon className="h-6 w-6" /> : null}
-                  <span className="sr-only">{s.label}</span>
-                </a>
-              )
-            })}
-          </div>
-
-          {/* mobile trigger */}
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="mt-2 border-2 border-white px-4 py-2 font-body text-sm font-bold lg:hidden"
+            className="btn btn-outline ml-auto min-h-[44px] px-5 lg:hidden"
             aria-expanded={open}
             aria-controls="mobile-menu"
           >
-            Menu
+            <span>Menu</span>
           </button>
         </div>
       </header>
 
-      {/* ---- condensed sticky bar ---- */}
-      <AnimatePresence>
-        {condensed && (
-          <motion.div
-            initial={reduce ? false : { y: -64 }}
-            animate={{ y: 0 }}
-            exit={reduce ? undefined : { y: -64 }}
-            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="fixed inset-x-0 top-0 z-50 hidden bg-forest/97 backdrop-blur lg:block"
-          >
-            <div className="mx-auto flex h-16 max-w-(--container-wide) items-center justify-between px-s30">
-              <Link
-                href="/"
-                className="font-head text-xl font-medium leading-none text-white"
-              >
-                Romeo T. Koduah
-              </Link>
-              <nav aria-label="Primary, condensed" className="flex items-center gap-5">
-                {NAV.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    aria-current={isActive(item.href) ? 'page' : undefined}
-                    className={cn(
-                      'font-body text-sm font-semibold text-white transition-colors duration-150 hover:text-periwinkle',
-                      isActive(item.href) && 'text-periwinkle',
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ---- mobile overlay ---- */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            id="mobile-menu"
-            initial={reduce ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={reduce ? undefined : { opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[60] flex flex-col bg-indigo px-s30 py-s20 text-soft lg:hidden"
-          >
-            <div className="flex items-center justify-between">
-              <span className="font-head text-xl">Menu</span>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="border-2 border-soft px-4 py-2 font-body text-sm font-bold"
-              >
-                Close
-              </button>
-            </div>
-            <nav
-              aria-label="Mobile"
-              className="mt-10 flex flex-1 flex-col gap-5 overflow-y-auto"
+      {open ? (
+        <div
+          id="mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site menu"
+          className="fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-sky px-s30 pb-8 text-ink lg:hidden"
+        >
+          <div className="flex h-[76px] shrink-0 items-center justify-between">
+            <Link href="/" className="font-head text-[1.625rem] font-bold leading-none">
+              {PROFILE.name}
+            </Link>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="btn btn-outline min-h-[44px] px-5"
             >
-              <Link href="/" className="font-head text-4xl leading-none">
-                Home
-              </Link>
-              {NAV.map((item) => (
+              <span>Close</span>
+            </button>
+          </div>
+
+          <nav aria-label="Mobile" className="mt-8 flex flex-col gap-3">
+            {[{ label: 'Home', href: '/' }, ...NAV, { label: 'Contact', href: '/contact' }].map(
+              (item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={cn(
-                    'font-head text-4xl leading-none',
-                    isActive(item.href) && 'text-periwinkle',
-                  )}
+                  className="font-head text-[3.25rem] font-bold leading-[0.95] tracking-[-0.02em]"
                 >
                   {item.label}
                 </Link>
-              ))}
-              <Link href="/publications" className="font-head text-4xl leading-none">
-                Publications
-              </Link>
-            </nav>
-            <div className="flex flex-wrap items-center gap-7 pt-8">
-              {SOCIALS.map((s) => {
-                const Icon = SOCIAL_ICONS[s.label]
-                return (
-                  <a
-                    key={s.label}
-                    href={s.href}
-                    target={s.href.startsWith('mailto:') ? undefined : '_blank'}
-                    rel="noopener noreferrer"
-                    title={s.label}
-                    className="text-soft/85 transition-colors duration-150 hover:text-soft"
-                  >
-                    {Icon ? <Icon className="h-7 w-7" /> : null}
-                    <span className="sr-only">{s.label}</span>
-                  </a>
-                )
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              ),
+            )}
+          </nav>
+
+          <p className="mt-10 font-body text-[1rem] font-medium">Practices</p>
+          <ul className="mt-3 flex flex-col gap-2">
+            {PRACTICES.map((p) => (
+              <li key={p.key}>
+                <Link href={p.href} className="font-body text-[1.125rem]">
+                  {p.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-auto flex gap-6 pt-10">
+            {SOCIALS.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="arrow-link"
+              >
+                {s.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </>
   )
 }

@@ -67,13 +67,13 @@ export default async function BlogPostPage({ params }: PageProps) {
   return (
     <article>
       {/* ============================= HEADER ============================= */}
-      <div className="border-b-2 border-indigo/25 bg-soft py-s50">
+      <div className="bg-sky py-s50">
         <Wide>
           <div className="mx-auto max-w-(--container-measure)">
             <Reveal immediate>
               <Link
                 href="/blog"
-                className="inline-flex items-center gap-2 font-body text-xs font-bold uppercase tracking-[0.18em] text-indigo transition-transform duration-150 hover:translate-x-0.5"
+                className="arrow-link text-ink"
               >
                 <span aria-hidden>←</span> Writing
               </Link>
@@ -86,7 +86,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                     <li key={tag}>
                       <Link
                         href={`/blog?tag=${encodeURIComponent(tag)}`}
-                        className="inline-block border-2 border-indigo px-3 py-1 font-body text-xs font-semibold leading-none text-indigo transition-colors duration-150 hover:bg-indigo hover:text-paper"
+                        className="inline-block bg-paper px-3 py-1.5 font-body text-[0.9375rem] font-medium leading-none text-ink transition-colors duration-150 hover:bg-ink hover:text-paper"
                       >
                         {tag}
                       </Link>
@@ -102,14 +102,14 @@ export default async function BlogPostPage({ params }: PageProps) {
 
             {post.excerpt ? (
               <Reveal immediate delay={0.12}>
-                <p className="mt-7 font-head text-(length:--text-fluid-md) font-light leading-[1.3] text-ink/85">
+                <p className="mt-7 font-body text-(length:--text-step-lead) leading-[1.4] text-ink">
                   {post.excerpt}
                 </p>
               </Reveal>
             ) : null}
 
             <Reveal immediate delay={0.16}>
-              <div className="mt-7 border-t-2 border-indigo/25 pt-5">
+              <div className="mt-7">
                 <PostMeta
                   publishedAt={post.publishedAt}
                   readingMinutes={post.readingMinutes}
@@ -158,7 +158,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 />
                 <a
                   href="#comments"
-                  className="flex flex-col items-center gap-1 border-2 border-ink/15 px-3 py-3 font-body text-sm font-bold leading-none text-ink/70 transition-colors duration-150 hover:border-indigo hover:text-indigo"
+                  className="flex flex-col items-center gap-1 bg-mist px-3 py-3 font-body text-[0.9375rem] font-medium leading-none text-ink transition-colors duration-150 hover:bg-ink hover:text-paper"
                 >
                   <span aria-hidden className="text-[17px] leading-none">
                     ❝
@@ -176,7 +176,7 @@ export default async function BlogPostPage({ params }: PageProps) {
             </Reveal>
 
             {/* ========================= END MATTER ======================== */}
-            <div className="mt-s40 border-t-2 border-indigo/25 pt-s30">
+            <div className="mt-s40 pt-s30">
               <div className="flex flex-wrap items-center gap-4">
                 <LikeButton
                   targetType="post"
@@ -187,7 +187,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 />
                 <a
                   href="#comments"
-                  className="font-body text-sm font-bold text-indigo underline underline-offset-4 transition-colors duration-150 hover:text-ember"
+                  className="arrow-link text-ink"
                 >
                   {plural(commentCount, 'comment')}
                 </a>
@@ -195,7 +195,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
               {post.tags.length > 0 ? (
                 <div className="mt-8">
-                  <p className="font-body text-[11px] font-bold uppercase tracking-[0.16em] text-ink/50">
+                  <p className="font-body text-[1rem] font-medium text-muted">
                     Filed under
                   </p>
                   <ul className="mt-3 flex flex-wrap gap-2">
@@ -203,7 +203,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                       <li key={tag}>
                         <Link
                           href={`/blog?tag=${encodeURIComponent(tag)}`}
-                          className="inline-block border-2 border-indigo px-3 py-1 font-body text-xs font-semibold leading-none text-indigo transition-colors duration-150 hover:bg-indigo hover:text-paper"
+                          className="inline-block bg-paper px-3 py-1.5 font-body text-[0.9375rem] font-medium leading-none text-ink transition-colors duration-150 hover:bg-ink hover:text-paper"
                         >
                           {tag}
                         </Link>
@@ -218,14 +218,14 @@ export default async function BlogPostPage({ params }: PageProps) {
             {adjacent.prev || adjacent.next ? (
               <nav
                 aria-label="More writing"
-                className="mt-s30 grid gap-px border-2 border-ink/12 bg-ink/12 sm:grid-cols-2"
+                className="mt-s30 grid gap-4 sm:grid-cols-2"
               >
                 {adjacent.prev ? (
                   <Link
                     href={`/blog/${adjacent.prev.slug}`}
-                    className="group bg-paper p-6 transition-colors duration-150 hover:bg-soft"
+                    className="group bg-mist p-6 transition-colors duration-150 hover:bg-sky"
                   >
-                    <span className="font-body text-[11px] font-bold uppercase tracking-[0.16em] text-indigo">
+                    <span className="font-body text-[0.9375rem] font-medium text-muted">
                       <span aria-hidden>←</span> Previous
                     </span>
                     <span className="mt-3 block text-balance font-head text-(length:--text-h4) leading-[1.15] text-ink transition-colors duration-150 group-hover:text-indigo">
@@ -239,9 +239,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                 {adjacent.next ? (
                   <Link
                     href={`/blog/${adjacent.next.slug}`}
-                    className="group bg-paper p-6 text-right transition-colors duration-150 hover:bg-soft"
+                    className="group bg-mist p-6 text-right transition-colors duration-150 hover:bg-sky"
                   >
-                    <span className="font-body text-[11px] font-bold uppercase tracking-[0.16em] text-indigo">
+                    <span className="font-body text-[0.9375rem] font-medium text-muted">
                       Next <span aria-hidden>→</span>
                     </span>
                     <span className="mt-3 block text-balance font-head text-(length:--text-h4) leading-[1.15] text-ink transition-colors duration-150 group-hover:text-indigo">

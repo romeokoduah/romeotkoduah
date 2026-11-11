@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import { splitTitle } from '@/lib/utils'
 import { notFound } from 'next/navigation'
 import {
   FEATURED_PROJECTS,
@@ -11,7 +12,7 @@ import {
 } from '@/content'
 import type { Project } from '@/content'
 import { logoFor, projectImages } from '@/lib/images'
-import { Btn, Chip, Eyebrow, Section, Wide } from '@/components/site/primitives'
+import { Btn, Chip, Section, Wide } from '@/components/site/primitives'
 import { ProjectCard } from '@/components/site/project-card'
 import { ProjectGallery } from '@/components/site/project-gallery'
 import { Reveal } from '@/components/site/reveal'
@@ -78,7 +79,6 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   if (!project) notFound()
 
   const practice = PRACTICE_BY_KEY[project.practice]
-  const accent = practice.accent
   const logo = logoFor(project.slug)
   const { cover, gallery } = projectImages(project.slug)
   const related = relatedProjects(project)
@@ -91,27 +91,14 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   return (
     <>
       {/* ============================= HERO ============================= */}
-      <div
-        className="border-b-2 py-s50"
-        style={{ backgroundColor: `${accent}0d`, borderColor: accent }}
-      >
+      <div className="bg-sky pb-s50 pt-s40">
         <Wide>
-          <Reveal>
-            <Link
-              href={practice.href}
-              className="inline-flex items-center gap-2 font-body text-xs font-bold uppercase tracking-[0.18em] transition-transform duration-150 hover:translate-x-0.5"
-              style={{ color: accent }}
-            >
-              <span aria-hidden>←</span> {practice.short}
-            </Link>
-          </Reveal>
-
           {logo ? (
-            <Reveal delay={0.04}>
+            <div data-rise className="mb-8">
               {/* Explicit height, auto width: several of these SVGs carry a
                   viewBox but no intrinsic size, so max-* alone collapses them
                   to zero inside a shrink-to-fit parent. */}
-              <div className="mt-5 inline-flex items-center bg-white px-4 py-3">
+              <div className="inline-flex items-center bg-paper px-4 py-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={logo}
@@ -119,48 +106,60 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                   className="h-[46px] w-auto max-w-[240px] object-contain"
                 />
               </div>
-            </Reveal>
+            </div>
           ) : null}
 
-          <Reveal delay={0.06}>
-            <h1 className="mt-4 max-w-4xl" style={{ color: accent }}>
-              {project.title}
-            </h1>
-          </Reveal>
-
-          <Reveal delay={0.12}>
-            <p className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1 font-body text-sm font-semibold text-ink/70">
-              <span>{project.org}</span>
-              <span aria-hidden style={{ color: accent }}>
-                ·
-              </span>
-              <span>{project.role}</span>
-              <span aria-hidden style={{ color: accent }}>
-                ·
-              </span>
-              <span>{project.period}</span>
+          {/* Long titles take a wider measure rather than a smaller size. */}
+          <h1
+            data-rise
+            style={{ '--i': 1 } as React.CSSProperties}
+            className="max-w-[24ch] text-ink"
+          >
+            {splitTitle(project.title)[0]}
+          </h1>
+          {splitTitle(project.title)[1] ? (
+            <p
+              data-rise
+              style={{ '--i': 1 } as React.CSSProperties}
+              className="mt-5 max-w-[40ch] font-head text-[clamp(1.5rem,1.1rem+1.4vw,2.5rem)] font-bold leading-[1.05] tracking-[-0.01em] text-muted"
+            >
+              {splitTitle(project.title)[1]}
             </p>
-          </Reveal>
+          ) : null}
+
+          <p
+            data-rise
+            style={{ '--i': 2 } as React.CSSProperties}
+            className="mt-8 flex flex-wrap items-baseline gap-x-3 gap-y-1 font-body text-(length:--text-step-lead) leading-[1.4] text-ink"
+          >
+            <span>{project.org}</span>
+            <span aria-hidden>·</span>
+            <span>{project.role}</span>
+            <span aria-hidden>·</span>
+            <span>{project.period}</span>
+          </p>
 
           {project.funding ? (
-            <Reveal delay={0.16}>
-              <p className="mt-3 font-body text-sm text-ink/70">
-                <span
-                  className="font-bold uppercase tracking-[0.16em] text-[11px]"
-                  style={{ color: accent }}
-                >
-                  Funding
-                </span>{' '}
-                {project.funding}
-              </p>
-            </Reveal>
+            <p
+              data-rise
+              style={{ '--i': 3 } as React.CSSProperties}
+              className="mt-3 max-w-[60ch] font-body text-ink"
+            >
+              <span className="font-semibold">Funding:</span> {project.funding}
+            </p>
           ) : null}
+
+          <p data-rise style={{ '--i': 4 } as React.CSSProperties} className="mt-8">
+            <Link href={practice.href} className="arrow-link text-ink">
+              <span aria-hidden>←</span> {practice.short}
+            </Link>
+          </p>
         </Wide>
       </div>
 
       {/* ============================ COVER ============================= */}
       {cover ? (
-        <div className="relative aspect-21/9 w-full overflow-hidden bg-soft">
+        <div className="relative aspect-21/9 w-full overflow-hidden bg-mist">
           <Image
             src={cover}
             alt={project.title}
@@ -183,101 +182,74 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             }
           >
             <div>
-              <Reveal>
-                <p className="max-w-(--container-measure) font-head text-(length:--text-fluid-md) leading-snug text-ink">
-                  {project.summary}
-                </p>
-              </Reveal>
+              <p
+                data-rise
+                className="max-w-(--container-measure) font-body text-(length:--text-step-lead) font-medium leading-snug text-ink"
+              >
+                {project.summary}
+              </p>
 
               <div className="mt-8 max-w-(--container-measure) space-y-6">
                 {project.body.map((paragraph, i) => (
-                  <Reveal key={i} delay={0.05 * i}>
-                    <p className="font-body text-(length:--text-fluid-sm) leading-[1.75] text-ink/85">
-                      {paragraph}
-                    </p>
-                  </Reveal>
+                  <p
+                    key={i}
+                    data-rise
+                    style={{ '--i': i + 1 } as React.CSSProperties}
+                    className="font-body leading-[1.7] text-ink"
+                  >
+                    {paragraph}
+                  </p>
                 ))}
               </div>
 
               {project.href ? (
-                <Reveal delay={0.1}>
-                  <div className="mt-9">
-                    <Btn href={project.href} accent={accent}>
-                      {outboundLabel(project.href)}
-                    </Btn>
-                  </div>
-                </Reveal>
+                <div data-rise className="mt-9">
+                  <Btn href={project.href}>{outboundLabel(project.href)}</Btn>
+                </div>
               ) : null}
             </div>
 
             {hasAside ? (
-              <aside className="lg:pt-1">
+              <aside className="space-y-s30 lg:pt-1">
                 {hasOutputs ? (
-                  <Reveal>
-                    <section>
-                      <h2
-                        className="border-b-2 pb-3 font-head text-(length:--text-h4)"
-                        style={{ borderColor: accent, color: accent }}
-                      >
-                        Outputs
-                      </h2>
-                      <ul className="mt-1">
-                        {project.outputs?.map((output) => (
-                          <li
-                            key={output}
-                            className="rule py-4 font-body text-sm leading-relaxed text-ink/80"
-                          >
-                            {output}
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                  </Reveal>
+                  <section data-rise>
+                    <h2 className="font-head text-(length:--text-h4) text-ink">Outputs</h2>
+                    <ul className="mt-4 space-y-4">
+                      {project.outputs?.map((output) => (
+                        <li key={output} className="font-body leading-relaxed text-ink">
+                          {output}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
                 ) : null}
 
                 {hasPartners ? (
-                  <Reveal delay={0.06}>
-                    <section className={hasOutputs ? 'mt-s30' : undefined}>
-                      <h2
-                        className="border-b-2 pb-3 font-head text-(length:--text-h4)"
-                        style={{ borderColor: accent, color: accent }}
-                      >
-                        Partners
-                      </h2>
-                      <ul className="mt-1">
-                        {project.partners?.map((partner) => (
-                          <li
-                            key={partner}
-                            className="rule py-3 font-body text-sm leading-relaxed text-ink/80"
-                          >
-                            {partner}
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                  </Reveal>
+                  <section data-rise style={{ '--i': 1 } as React.CSSProperties}>
+                    <h2 className="font-head text-(length:--text-h4) text-ink">Partners</h2>
+                    <ul className="mt-4 space-y-3">
+                      {project.partners?.map((partner) => (
+                        <li key={partner} className="font-body leading-relaxed text-ink">
+                          {partner}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
                 ) : null}
 
                 {hasTags ? (
-                  <Reveal delay={0.12}>
-                    <section
-                      className={hasOutputs || hasPartners ? 'mt-s30' : undefined}
-                    >
-                      <h2
-                        className="border-b-2 pb-3 font-head text-(length:--text-h4)"
-                        style={{ borderColor: accent, color: accent }}
-                      >
-                        Methods and themes
-                      </h2>
-                      <ul className="mt-5 flex flex-wrap gap-2">
-                        {project.tags.map((tag) => (
-                          <li key={tag}>
-                            <Chip accent={accent}>{tag}</Chip>
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                  </Reveal>
+                  <section data-rise style={{ '--i': 2 } as React.CSSProperties}>
+                    <h2 className="font-head text-(length:--text-h4) text-ink">
+                      Methods and themes
+                    </h2>
+                    <ul className="mt-5 flex flex-wrap gap-2">
+                      {project.tags.map((tag) => (
+                        <li key={tag}>
+                          <Chip>{tag}</Chip>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
                 ) : null}
               </aside>
             ) : null}
@@ -289,18 +261,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
       {gallery.length > 0 ? (
         <Section tone="soft">
           <Wide>
-            <Reveal>
-              <Eyebrow style={{ color: accent }}>From the field</Eyebrow>
-            </Reveal>
-            <Reveal delay={0.06}>
-              <div className="mt-s20">
-                <ProjectGallery
-                  images={gallery}
-                  title={project.title}
-                  accent={accent}
-                />
-              </div>
-            </Reveal>
+            <h2 data-rise className="text-ink">
+              From the field
+            </h2>
+            <div data-rise style={{ '--i': 1 } as React.CSSProperties} className="mt-s40">
+              <ProjectGallery images={gallery} title={project.title} />
+            </div>
           </Wide>
         </Section>
       ) : null}
@@ -310,17 +276,17 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         <Section tone={gallery.length > 0 ? 'paper' : 'soft'}>
           <Wide>
             <div className="flex flex-wrap items-end justify-between gap-6">
-              <Reveal>
-                <h2 style={{ color: accent }}>More in {practice.short}</h2>
-              </Reveal>
-              <Reveal delay={0.06}>
-                <Btn href={practice.href} variant="outline" accent={accent}>
+              <h2 data-rise className="text-ink">
+                More in {practice.short}
+              </h2>
+              <div data-rise style={{ '--i': 1 } as React.CSSProperties}>
+                <Btn href={practice.href} variant="outline">
                   All {practice.short.toLowerCase()} projects
                 </Btn>
-              </Reveal>
+              </div>
             </div>
 
-            <div className="mt-s40 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-s40 grid gap-x-14 gap-y-12 lg:grid-cols-2">
               {related.map((sibling, i) => (
                 <Reveal key={sibling.slug} delay={0.05 * i}>
                   <ProjectCard project={sibling} className="h-full" />

@@ -3,14 +3,13 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getAlbumBySlug, listPhotos } from '@/lib/gallery'
 import { Section, Wide } from '@/components/site/primitives'
-import { Reveal } from '@/components/site/reveal'
 import { PhotoGrid } from '@/components/gallery/photo-grid'
 
 /** Photographs are read at request time; the build must not need a database. */
 export const dynamic = 'force-dynamic'
 
 /** `--color-emerald`, as a literal — inline colour maths needs the hex. */
-const ACCENT_HEX = '#158753'
+const ACCENT_HEX = '#0e1822'
 
 type PageProps = { params: Promise<{ slug: string }> }
 
@@ -53,40 +52,35 @@ export default async function AlbumPage({ params }: PageProps) {
   return (
     <>
       {/* ============================== HEADER ============================== */}
-      <div
-        className="border-b-2 bg-soft py-s50"
-        style={{ borderColor: ACCENT_HEX }}
-      >
+      <div className="bg-sky pb-s50 pt-s40">
         <Wide>
-          <Reveal immediate>
-            <Link
-              href="/gallery"
-              className="inline-flex items-center gap-2 font-body text-xs font-bold uppercase tracking-[0.18em] transition-transform duration-150 hover:translate-x-0.5"
-              style={{ color: ACCENT_HEX }}
-            >
-              <span aria-hidden>←</span> All albums
-            </Link>
-          </Reveal>
+          <h1 data-rise className="max-w-[24ch] text-ink">
+            {album.title}
+          </h1>
 
-          <Reveal immediate delay={0.06}>
-            <h1 className="mt-5 max-w-4xl" style={{ color: ACCENT_HEX }}>
-              {album.title}
-            </h1>
-          </Reveal>
-
-          <Reveal immediate delay={0.12}>
-            <p className="mt-5 font-body text-[11px] font-bold uppercase tracking-[0.16em] text-ink/55">
-              {photoCount(photos.length)}
-            </p>
-          </Reveal>
+          <p
+            data-rise
+            style={{ '--i': 1 } as React.CSSProperties}
+            className="mt-6 font-body text-(length:--text-step-lead) tabular-nums text-ink"
+          >
+            {photoCount(photos.length)}.
+          </p>
 
           {album.description ? (
-            <Reveal immediate delay={0.16}>
-              <p className="mt-5 max-w-(--container-measure) font-body text-(length:--text-fluid-md) leading-normal text-ink/80">
-                {album.description}
-              </p>
-            </Reveal>
+            <p
+              data-rise
+              style={{ '--i': 2 } as React.CSSProperties}
+              className="mt-4 max-w-[60ch] font-body text-(length:--text-step-lead) leading-[1.4] text-ink"
+            >
+              {album.description}
+            </p>
           ) : null}
+
+          <p data-rise style={{ '--i': 3 } as React.CSSProperties} className="mt-8">
+            <Link href="/gallery" className="arrow-link text-ink">
+              <span aria-hidden>←</span> All albums
+            </Link>
+          </p>
         </Wide>
       </div>
 
@@ -100,21 +94,20 @@ export default async function AlbumPage({ params }: PageProps) {
               accent={ACCENT_HEX}
             />
           ) : (
-            <div
-              className="max-w-(--container-measure) border-2 bg-paper p-s30"
-              style={{ borderColor: ACCENT_HEX }}
-            >
-              <h2 style={{ color: ACCENT_HEX }}>This album is empty</h2>
-              <p className="mt-6 font-body text-(length:--text-fluid-sm) leading-[1.75] text-ink/85">
+            <div className="max-w-(--container-measure)">
+              <h2 data-rise className="text-ink">
+                This album is empty
+              </h2>
+              <p
+                data-rise
+                style={{ '--i': 1 } as React.CSSProperties}
+                className="mt-6 font-body text-(length:--text-step-lead) leading-[1.5] text-ink"
+              >
                 Nothing has been added to {album.title} yet. Try one of the other
                 albums in the meantime.
               </p>
               <p className="mt-7">
-                <Link
-                  href="/gallery"
-                  className="inline-flex items-center gap-2 font-body text-sm font-bold transition-transform duration-150 hover:translate-x-1"
-                  style={{ color: ACCENT_HEX }}
-                >
+                <Link href="/gallery" className="arrow-link text-ink">
                   Back to the gallery <span aria-hidden>→</span>
                 </Link>
               </p>
